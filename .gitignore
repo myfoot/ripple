@@ -1,0 +1,19 @@
+logs
+project/project
+project/target
+target
+tmp
+.history
+dist
+
+.DS_Store
+
+# for Eclipse
+.classpath
+.cache
+.project
+.settings
+
+# for IDEA
+.idea
+*.iml
