@@ -6,6 +6,8 @@ tmp
 .history
 dist
 
+test/example*
+
 .DS_Store
 
 # for Eclipse
