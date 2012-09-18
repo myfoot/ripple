@@ -3,10 +3,9 @@ package controllers
 import play.api.mvc.{Action, Controller}
 import play.api.data._
 import play.api.data.Forms._
-import models.CoreSchema
 
 import org.squeryl.PrimitiveTypeMode._
-import models.user.{User, UserRepository}
+import models.user.{UserFactory, UserRepository}
 
 object SessionsController extends Controller {
 
@@ -18,10 +17,7 @@ object SessionsController extends Controller {
       fields => fields match {
         case (username, password) => {
           transaction{
-            UserRepository.find(username, password) match {
-              case Some(x) => true
-              case _ => false
-            }
+            UserRepository.find(username, password).getOrElse(UserFactory.invalidUser).isValid
           }
         }
       }
@@ -36,9 +32,10 @@ object SessionsController extends Controller {
     loginForm.bindFromRequest.fold(
       errors => BadRequest(views.html.sessions.index(errors)),
       value => value match {
-        case (username, password) => Redirect(routes.Application.chatRoom(username = Some(username)))
+        case (username, password) => {
+          Redirect(routes.Application.chatRoom(username = Some(username)))
+        }
       }
     )
   }
-
 }
