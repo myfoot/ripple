@@ -16,10 +16,18 @@ class UserRepositorySpec extends RepositorySpecBase {
         UserRepository.find("", "") must beNone
       }
     }
+    "#findById" in {
+      "指定された名前＆パスワードのユーザーが存在する場合はUserオブジェクトを返す" in new sampleUser {
+        UserRepository.findById(user.id) must beSome(user)
+      }
+      "指定された名前＆パスワードのユーザーが存在しない場合は何も返さない" in new sampleUser {
+        UserRepository.findById(user.id+1) must beNone
+      }
+    }
   }
 
   trait sampleUser extends BeforeAfter {
-    val user = User("hoge", "foo", "bar")
+    val user = User("hoge", "foo", "bar", Administrator)
 
     def before = {
       transaction {

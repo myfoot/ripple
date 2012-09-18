@@ -1,4 +1,4 @@
-@(loginForm: Form[(String,String)])(implicit flash: Flash)
+@(loginForm: Form[Option[models.user.User]])(implicit flash: Flash)
 
 @import helper._
 
@@ -14,7 +14,7 @@
     @helper.form(action=routes.SessionsController.create) {
         <fieldset>
             <legend>ログインしてください</legend>
-            @inputText(loginForm("username"), '_error -> loginForm.globalError, 'placeholder -> "Username", 'class -> "input-small")
+            @inputText(loginForm("name"), '_error -> loginForm.globalError, 'placeholder -> "Username", 'class -> "input-small")
             @inputPassword(loginForm("password"), 'placeholder -> "Password", 'class -> "input-small")
         </fieldset>
         <div class="actions"><button class="btn" type="submit">Login</button></div>
