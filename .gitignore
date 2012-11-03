@@ -6,7 +6,10 @@ tmp
 .history
 dist
 
+#for play
 test/example*
+.target
+bin
 
 .DS_Store
 
