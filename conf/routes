@@ -4,7 +4,7 @@
 
 # Home page
 GET     /                           controllers.Application.index
-GET     /room                       controllers.Application.chatRoom(username: Option[String] ?= None)
+GET     /room                       controllers.Application.chatRoom
 GET     /room/chat                  controllers.Application.chat(username)
 
 #login

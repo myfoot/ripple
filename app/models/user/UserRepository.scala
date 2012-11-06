@@ -15,6 +15,11 @@ object UserRepository {
   def find(name:String, password:String):Option[User] = inTransaction{
     CoreSchema.users
       .where(user => user.name === name)
-      .where(user => user.password === password).toList.headOption
+      .where(user => user.password === password).headOption
   }
+
+  def findById(id:Long):Option[User] = inTransaction{
+    CoreSchema.users.lookup(id)
+  }
+
 }
