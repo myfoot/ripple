@@ -14,17 +14,20 @@ import akka.actor._
 import akka.util.duration._
 
 import org.squeryl.PrimitiveTypeMode._
+import jp.t2v.lab.play20.auth.Auth
+import user.LoggedInUser
 
-object Application extends Controller {
+object Application extends Controller with Auth with AuthConfigImpl {
 
-  def index = Action { implicit request =>
+  def index = authorizedAction(LoggedInUser){ user => implicit request =>
     Ok(views.html.index())
   }
 
   /**
    * Display the chat room page.
    */
-  def chatRoom(username: Option[String]) = Action { implicit request =>
+  def chatRoom = authorizedAction(LoggedInUser){ user => implicit request =>
+    val username = Some("hoge")
     username.filterNot(_.isEmpty).map { username =>
       Ok(views.html.chatRoom(username))
     }.getOrElse {
@@ -38,9 +41,7 @@ object Application extends Controller {
    * Handles the chat websocket.
    */
   def chat(username: String) = WebSocket.async[JsValue] { request  =>
-
     ChatRoom.join(username)
-
   }
   
 }
