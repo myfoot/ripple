@@ -5,7 +5,7 @@
 # Home page
 GET     /                           controllers.ChatRoomsController.index
 GET     /room                       controllers.ChatRoomsController.chatRoom
-GET     /room/chat                  controllers.ChatRoomsController.chat(username)
+GET     /room/chat                  controllers.ChatRoomsController.chat(userId:Long)
 
 #login
 GET     /login                      controllers.SessionsController.index
