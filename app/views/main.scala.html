@@ -1,7 +1,7 @@
 @(connected: Option[String])(content: Html)
 
 @import helper._
-@import controllers.Application._
+@import controllers.ChatRoomsController._
 
 <!DOCTYPE html>
 
@@ -17,12 +17,12 @@
         <div class="topbar">
             <div class="fill">
                 <div class="container">
-                    <a class="brand" href="@routes.Application.index()">Ripple</a>
+                    <a class="brand" href="@routes.ChatRoomsController.index()">Ripple</a>
                     
                     @connected.map { username =>
                         <p class="pull-right">
                             Logged in as @username —
-                            <a href="@routes.Application.index()">Disconnect</a>
+                            <a href="@routes.ChatRoomsController.index()">Disconnect</a>
                         </p>
                     }.getOrElse{
                         ログインしてください。

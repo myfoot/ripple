@@ -17,21 +17,20 @@ import org.squeryl.PrimitiveTypeMode._
 import jp.t2v.lab.play20.auth.Auth
 import user.LoggedInUser
 
-object Application extends Controller with Auth with AuthConfigImpl {
+object ChatRoomsController extends Controller with Auth with AuthConfigImpl {
 
   def index = authorizedAction(LoggedInUser){ user => implicit request =>
-    Ok(views.html.index())
+    Ok(views.html.chatRooms.index())
   }
 
   /**
    * Display the chat room page.
    */
   def chatRoom = authorizedAction(LoggedInUser){ user => implicit request =>
-    val username = Some("hoge")
-    username.filterNot(_.isEmpty).map { username =>
-      Ok(views.html.chatRoom(username))
+    Some(user.name).filterNot(_.isEmpty).map { username =>
+      Ok(views.html.chatRooms.chatRoom(username))
     }.getOrElse {
-      Redirect(routes.Application.index).flashing(
+      Redirect(routes.ChatRoomsController.index).flashing(
         "error" -> "Please choose a valid username."
       )
     }
