@@ -3,9 +3,9 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
-GET     /room                       controllers.Application.chatRoom
-GET     /room/chat                  controllers.Application.chat(username)
+GET     /                           controllers.ChatRoomsController.index
+GET     /room                       controllers.ChatRoomsController.chatRoom
+GET     /room/chat                  controllers.ChatRoomsController.chat(username)
 
 #login
 GET     /login                      controllers.SessionsController.index
