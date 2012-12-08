@@ -1,6 +1,7 @@
 package controllers
 
 import play.api._
+import libs.concurrent.Promise
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
@@ -13,9 +14,10 @@ import models._
 import akka.actor._
 import akka.util.duration._
 
+import chat.ChatRoomRepository
 import org.squeryl.PrimitiveTypeMode._
 import jp.t2v.lab.play20.auth.Auth
-import user.LoggedInUser
+import user.{UserRepository, LoggedInUser}
 
 object ChatRoomsController extends Controller with Auth with AuthConfigImpl {
 
@@ -27,20 +29,17 @@ object ChatRoomsController extends Controller with Auth with AuthConfigImpl {
    * Display the chat room page.
    */
   def chatRoom = authorizedAction(LoggedInUser){ user => implicit request =>
-    Some(user.name).filterNot(_.isEmpty).map { username =>
-      Ok(views.html.chatRooms.chatRoom(username))
-    }.getOrElse {
-      Redirect(routes.ChatRoomsController.index).flashing(
-        "error" -> "Please choose a valid username."
-      )
-    }
+    Ok(views.html.chatRooms.chatRoom(user))
   }
   
   /**
    * Handles the chat websocket.
    */
-  def chat(username: String) = WebSocket.async[JsValue] { request  =>
-    ChatRoom.join(username)
+  def chat(userId: Long) = WebSocket.async[JsValue] { request  =>
+    ChatRoomActor.join(
+      chatRoom = ChatRoomRepository.findOrCreate("defaultRoom"),
+      userOption = UserRepository.findById(userId)
+    )
   }
   
 }
