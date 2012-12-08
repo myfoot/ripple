@@ -9,8 +9,8 @@ object ApplicationBuild extends Build {
     val appVersion      = "1.0"
 
     val appDependencies = Seq(
-      "org.squeryl" %% "squeryl" % "0.9.5" withSources(),
-      "mysql" % "mysql-connector-java" % "5.1.18",
+      "org.squeryl" %% "squeryl" % "0.9.5-2" withSources(),
+      "mysql" % "mysql-connector-java" % "5.1.21",
       "jp.t2v" % "play20.auth_2.9.1" % "0.3" withSources()
     )
 
