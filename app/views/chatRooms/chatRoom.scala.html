@@ -1,9 +1,9 @@
-@(username: String)(implicit request: RequestHeader)
+@(user: models.user.User)(implicit request: RequestHeader)
 
-@main(Some(username)) {
+@main(Some(user.name)) {
     
     <div class="page-header">
-        <h1>Welcome to the chat room <small>You are chatting as @username</small></h1>
+        <h1>Welcome to the chat room <small>You are chatting as @user.name</small></h1>
     </div>
     
     <div id="onError" class="alert-message error">
@@ -30,7 +30,7 @@
         $(function() {
             
 			var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
-            var chatSocket = new WS("@routes.ChatRoomsController.chat(username).webSocketURL()")
+            var chatSocket = new WS("@routes.ChatRoomsController.chat(user.id).webSocketURL()")
             
             var sendMessage = function() {
                 chatSocket.send(JSON.stringify(
@@ -57,7 +57,7 @@
                 $("span", el).text(data.user)
                 $("p", el).text(data.message)
                 $(el).addClass(data.kind)
-                if(data.user == '@username') $(el).addClass('me')
+                if(data.user == '@user.name') $(el).addClass('me')
                 $('#messages').append(el)
                 
                 // Update the members list
