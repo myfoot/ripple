@@ -10,6 +10,7 @@ GET     /room/chat                  controllers.ChatRoomsController.chat(userId:
 #login
 GET     /login                      controllers.SessionsController.index
 POST    /login                      controllers.SessionsController.create
+POST    /logout                     controllers.SessionsController.logout
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

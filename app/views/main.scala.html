@@ -20,13 +20,17 @@
                     <a class="brand" href="@routes.ChatRoomsController.index()">Ripple</a>
                     
                     @connected.map { username =>
-                        <p class="pull-right">
-                            Logged in as @username —
-                            <a href="@routes.ChatRoomsController.index()">Disconnect</a>
-                        </p>
+                        <div class="pull-right">
+                            <p class="pull-left">Logged in as @username —</p>
+                            @form(action=routes.SessionsController.logout(), 'class -> "pull-left") {
+                              <input type="submit" value="Disconnect"/>
+                            }
+                        </div>
                     }.getOrElse{
-                        ログインしてください。
-                        <a href="@routes.SessionsController.index">Login</a>
+                        <div class="pull-right">
+                            <span>ログインしてません</span>
+                            <a href="@routes.SessionsController.index">Login</a>
+                        </div>
                     }
                     
                 </div>
