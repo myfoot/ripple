@@ -1,6 +1,6 @@
-@()(implicit flash: Flash)
+@(user: models.user.User)(implicit flash: Flash)
 
-@main(Some("testUser")) {
+@main(Some(user.name)) {
     
     @flash.get("error").map { errorMessage =>
 

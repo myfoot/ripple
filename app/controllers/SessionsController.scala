@@ -22,7 +22,6 @@ object SessionsController extends Controller with LoginLogout with AuthConfigImp
   }
 
   def logout = Action {implicit request =>
-    // TODO: do something...
     gotoLogoutSucceeded
   }
 

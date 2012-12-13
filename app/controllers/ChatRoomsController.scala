@@ -22,7 +22,7 @@ import user.{UserRepository, LoggedInUser}
 object ChatRoomsController extends Controller with Auth with AuthConfigImpl {
 
   def index = authorizedAction(LoggedInUser){ user => implicit request =>
-    Ok(views.html.chatRooms.index())
+    Ok(views.html.chatRooms.index(user))
   }
 
   /**
