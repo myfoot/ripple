@@ -1,21 +1,19 @@
-package controllers
+package controllers.chat
 
 import akka.actor._
 import akka.util.duration._
-
-import play.api._
-import play.api.libs.json._
-import play.api.libs.iteratee._
+import akka.util
+import akka.pattern.ask
 import play.api.libs.concurrent._
 
-import akka.util.Timeout
-import akka.pattern.ask
-
-import play.api.Play.current
-import akka.util
+import play.api.libs.json._
+import play.api.libs.iteratee._
 import scala.collection.mutable.{Map => MutableMap}
+import models.user.User
+import controllers.chat.action.ChatAction._
+import controllers.chat.ConnectionResult.{Connected, CannotConnect}
 import models.chat.ChatRoom
-import models.user.{LoggedInUser, User}
+import play.libs.Akka
 
 class ChatRoomActor extends Actor {
 
@@ -72,19 +70,19 @@ class ChatRoomActor extends Actor {
 }
 
 object ChatRoomActor {
-  
+
   implicit val timeout = util.Timeout(1 second)
 
   val chatRoomActors = MutableMap.empty[ChatRoom, ActorRef]
 
-  def default = {
+  private def default = {
     val roomActor = Akka.system.actorOf(Props[ChatRoomActor])
     // Create a bot user (just for fun)
     Robot(roomActor)
     roomActor
   }
 
-  private def getActor(chatRoom:ChatRoom):ActorRef = {
+  def getActor(chatRoom:ChatRoom):ActorRef = {
     chatRoomActors.get(chatRoom).getOrElse{
       val actor = default
       chatRoomActors += (chatRoom -> actor)
@@ -92,63 +90,19 @@ object ChatRoomActor {
     }
   }
 
-  def join(chatRoom:ChatRoom, userOption:Option[User]):Promise[(Iteratee[JsValue,_],Enumerator[JsValue])] = {
-    (getActor(chatRoom) ? Join(userOption)).asPromise.map {
+  def join(chatRoom: ChatRoom, userOption: Option[User]) = {
+    (ChatRoomActor.getActor(chatRoom) ? Join(userOption)).asPromise.map {
       case Connected(user, enumerator) =>
-        // Create an Iteratee to consume the feed
         val iteratee = Iteratee.foreach[JsValue] { event =>
-          println(getActor(chatRoom))
           getActor(chatRoom) ! Talk(user, (event \ "text").as[String])
         }.mapDone { _ =>
           getActor(chatRoom) ! Quit(user)
         }
         (iteratee,enumerator)
-
       case CannotConnect(error) =>
-        // Connection error
-        // A finished Iteratee sending EOF
         val iteratee = Done[JsValue,Unit]((),Input.EOF)
-        // Send an error and close the socket
         val enumerator =  Enumerator[JsValue](JsObject(Seq("error" -> JsString(error)))).andThen(Enumerator.enumInput(Input.EOF))
         (iteratee,enumerator)
     }
   }
-
-}
-
-case class Join(user:Option[User])
-case class Quit(user:User)
-case class Talk(user:User, text: String)
-case class NotifyJoin(user:User)
-
-case class Connected(user:User, enumerator:Enumerator[JsValue])
-case class CannotConnect(msg: String)
-
-
-object Robot {
-
-  def apply(chatRoom: ActorRef) {
-
-    // Create an Iteratee that log all messages to the console.
-    val loggerIteratee = Iteratee.foreach[JsValue](event => Logger("robot").info(event.toString))
-
-    val robot = User("Robot", "robo@hoge.com", "", LoggedInUser)
-
-    implicit val timeout = util.Timeout(1 second)
-    // Make the robot join the room
-    chatRoom ? (Join(Some(robot))) map {
-      case Connected(robot, robotChannel) =>
-        // Apply this Enumerator on the logger.
-        robotChannel |>> loggerIteratee
-    }
-
-    // Make the robot talk every 30 seconds
-    Akka.system.scheduler.schedule(
-      30 seconds,
-      30 seconds,
-      chatRoom,
-      Talk(robot, "I'm still alive")
-    )
-  }
-
 }
