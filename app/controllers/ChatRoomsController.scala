@@ -1,22 +1,12 @@
 package controllers
 
 import play.api._
-import libs.concurrent.Promise
 import play.api.mvc._
-import play.api.data._
-import play.api.data.Forms._
-
 import play.api.libs.json._
-import play.api.libs.iteratee._
-
-import models._
-
-import akka.actor._
-import akka.util.duration._
-
-import chat.ChatRoomRepository
-import org.squeryl.PrimitiveTypeMode._
 import jp.t2v.lab.play20.auth.Auth
+import chat.ChatRoomActor
+import models._
+import models.chat.ChatRoomRepository
 import user.{UserRepository, LoggedInUser}
 
 object ChatRoomsController extends Controller with Auth with AuthConfigImpl {
@@ -41,5 +31,5 @@ object ChatRoomsController extends Controller with Auth with AuthConfigImpl {
       userOption = UserRepository.findById(userId)
     )
   }
-  
+
 }
