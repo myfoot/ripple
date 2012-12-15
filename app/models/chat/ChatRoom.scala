@@ -2,15 +2,8 @@ package models.chat
 
 import models.BaseEntity
 import models.user.User
-import scala.collection.mutable.{Set => MutableSet}
+import collection.mutable.{Set => MutableSet}
 
-/**
- * Created with IntelliJ IDEA.
- * User: natsuki
- * Date: 12/12/02
- * Time: 19:02
- * To change this template use File | Settings | File Templates.
- */
 class ChatRoom(val name:String) extends BaseEntity {
   private type Members = MutableSet[User]
   // TODO: DBかKVSにStoreしてここでは管理しない
