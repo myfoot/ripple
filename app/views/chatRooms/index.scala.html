@@ -1,20 +1,14 @@
-@(user: models.user.User)(implicit flash: Flash)
+@(user: models.user.User, chatRooms: List[models.chat.ChatRoom])(implicit flash: Flash)
 
 @main(Some(user.name)) {
-    
-    @flash.get("error").map { errorMessage =>
-
-        <div class="alert-message error">
-            <p>
-                <strong>Oops!</strong> @errorMessage
-            </p>
-        </div>
-        
-    }
-
-    <div class="alert-message block-message info">
-        <p>
-            <strong>The Ripple</strong>
-        </p>
+    <div class="page-header">
+        <h1>Please Select Your ChatRoom</h1>
     </div>
+    <pre>
+        <ul>
+            @chatRooms.map{ chatRoom =>
+                <li><a tabindex="-1" href="@routes.ChatRoomsController.chatRoom(chatRoom.id)">@chatRoom.name</a></li>
+            }
+        </ul>
+    </pre>
 }
