@@ -24,8 +24,8 @@ object Robot {
 
     implicit val timeout = util.Timeout(1 second)
     // Make the robot join the room
-    chatRoom ? (Join(Some(robot))) map {
-      case Connected(robot, robotChannel) =>
+    chatRoom ? (Join(robot)) map {
+      case Connected(robotChannel) =>
         // Apply this Enumerator on the logger.
         robotChannel |>> loggerIteratee
     }

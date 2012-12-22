@@ -20,7 +20,7 @@ trait AuthConfigImpl extends AuthConfig {
   def resolveUser(id:Id):Option[User] = UserRepository.findById(id)
 
   val redirectLogin = Redirect(routes.SessionsController.index())
-  def loginSucceeded[A](request:Request[A]):PlainResult = Redirect(routes.ChatRoomsController.chatRoom())
+  def loginSucceeded[A](request:Request[A]):PlainResult = Redirect(routes.ChatRoomsController.index())
   def logoutSucceeded[A](request:Request[A]):PlainResult = redirectLogin
   def authenticationFailed[A](request:Request[A]):PlainResult = redirectLogin
   def authorizationFailed[A](request:Request[A]):PlainResult = Forbidden("no permission")

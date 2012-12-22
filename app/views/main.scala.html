@@ -23,7 +23,7 @@
                         <div class="pull-right">
                             <p class="pull-left">Logged in as @username —</p>
                             @form(action=routes.SessionsController.logout(), 'class -> "pull-left") {
-                              <input type="submit" value="Disconnect"/>
+                              <button type="submit" class="btn small">Logout</button>
                             }
                         </div>
                     }.getOrElse{
