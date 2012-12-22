@@ -6,6 +6,6 @@ import play.api.libs.iteratee.Enumerator
 import models.user.User
 
 object ConnectionResult {
-  case class Connected(user:User, enumerator:Enumerator[JsValue])
+  case class Connected(enumerator:Enumerator[JsValue])
   case class CannotConnect(msg: String)
 }

@@ -20,17 +20,13 @@ class ChatRoomActor extends Actor {
   val members = MutableMap.empty[User, PushEnumerator[JsValue]]
 
   def receive = {
-    case Join(userOption) => {
-      userOption.map{user =>
-        val channel =  Enumerator.imperative[JsValue]( onStart = self ! NotifyJoin(user))
-        if(members.contains(user)) {
-          sender ! CannotConnect("This user is already joined")
-        } else {
-          members += (user -> channel)
-          sender ! Connected(user, channel)
-        }
-      }.getOrElse{
-        sender ! CannotConnect("This user is not exist")
+    case Join(user) => {
+      val channel =  Enumerator.imperative[JsValue]( onStart = self ! NotifyJoin(user))
+      if(members.contains(user)) {
+        sender ! CannotConnect("This user is already joined")
+      } else {
+        members += (user -> channel)
+        sender ! Connected(channel)
       }
     }
 
@@ -90,9 +86,9 @@ object ChatRoomActor {
     }
   }
 
-  def join(chatRoom: ChatRoom, userOption: Option[User]) = {
-    (ChatRoomActor.getActor(chatRoom) ? Join(userOption)).asPromise.map {
-      case Connected(user, enumerator) =>
+  def join(chatRoom: ChatRoom, user: User) = {
+    (ChatRoomActor.getActor(chatRoom) ? Join(user)).asPromise.map {
+      case Connected(enumerator) =>
         val iteratee = Iteratee.foreach[JsValue] { event =>
           getActor(chatRoom) ! Talk(user, (event \ "text").as[String])
         }.mapDone { _ =>
