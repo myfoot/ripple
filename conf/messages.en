@@ -1,0 +1,2 @@
+error.chatroom.name.unique=This name is already used.
+error.chatroom.name.requireText=name is required.

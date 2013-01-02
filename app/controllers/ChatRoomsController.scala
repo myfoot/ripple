@@ -1,26 +1,63 @@
 package controllers
 
 import play.api._
+import i18n.Messages
+import i18n.Messages.Message
 import libs.concurrent.Promise
 import libs.iteratee.{Enumerator, Input, Done}
 import play.api.mvc._
 import play.api.libs.json._
+import com.codahale.jerkson.Json._
+import play.api.libs.json.Writes._
 import jp.t2v.lab.play20.auth.Auth
+
 import chat.ChatRoomActor
-import models._
-import models.chat.ChatRoomRepository
-import user.{UserRepository, LoggedInUser}
+import request.RequestType
+import request.RequestType._
+import _root_.models.chat.ChatRoomRepository
+import _root_.models.chat.ChatRoom
+import _root_.models.user.{UserRepository, LoggedInUser}
+
+import play.api.data._
+import play.api.data.Forms._
 
 object ChatRoomsController extends Controller with Auth with AuthConfigImpl {
 
   def index = authorizedAction(LoggedInUser){ user => implicit request =>
-    Ok(views.html.chatRooms.index(user, ChatRoomRepository.all))
+    request.requestType match {
+      case RequestType.XmlHttpRequest => Ok(generate(ChatRoomRepository.all.map(_.toMap)))
+      case _ => Ok(views.html.chatRooms.index(user, ChatRoomRepository.all))
+    }
+  }
+
+  val createForm = Form(
+    mapping(
+      "name" -> text
+    )(ChatRoom.apply)((room:ChatRoom) => Some(room.name))
+  )
+  /**
+   * XHR only
+   */
+  def create = authorizedAction(LoggedInUser){ user => implicit request =>
+    createForm.bindFromRequest.fold(
+      // errorはありえないけどね
+      errors => Ok(Json.toJson(Map("error" -> true, "success" -> false))),
+      chatRoom => ChatRoomRepository.insert(chatRoom) match {
+        case Right(_) => Ok(generate(Map("success" -> true, "error" -> false, "messages" -> Map.empty)))
+        case Left(x) => Ok(generate(Map(
+          "success" -> false,
+          "error" -> true,
+          "messages" -> x.map{case (key, value) =>
+            (key.name, value.map(validationName => Messages("error.chatroom.%s.%s".format(key.name, validationName.name))))
+          }.toMap)))
+      }
+    )
   }
 
   /**
    * Display the chat room page.
    */
-  def chatRoom(id:Long) = authorizedAction(LoggedInUser){ user => implicit request =>
+  def show(id:Long) = authorizedAction(LoggedInUser){ user => implicit request =>
     ChatRoomRepository.find(id) match {
       case Some(chatRoom) => Ok(views.html.chatRooms.chatRoom(chatRoom, user))
       case None => Redirect(routes.ChatRoomsController.index())

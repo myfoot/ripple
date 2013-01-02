@@ -1,14 +1,30 @@
-@(user: models.user.User, chatRooms: List[models.chat.ChatRoom])(implicit flash: Flash)
+@(user: models.user.User, chatRooms: List[models.chat.ChatRoom])(implicit request: RequestHeader)
+
+@import helper._
+@import controllers.routes.javascript._
+@javascriptRouter("jsRoutes")(
+    ChatRoomsController.create,
+    ChatRoomsController.index
+)
 
 @main(Some(user.name)) {
     <div class="page-header">
         <h1>Please Select Your ChatRoom</h1>
     </div>
+    <div>
+        <input type="text" id="name" placeholder="please enter new room's name...">
+        <button id="create_button">create</button>
+    </div>
+    <div id="errors" class="error"></div>
     <pre>
-        <ul>
-            @chatRooms.map{ chatRoom =>
-                <li><a tabindex="-1" href="@routes.ChatRoomsController.chatRoom(chatRoom.id)">@chatRoom.name</a></li>
+        <ul id="chatroom_list">
+            @chatRooms.zipWithIndex.map{ case (chatRoom,i) =>
+                <li><a tabindex="@i" href="@routes.ChatRoomsController.show(chatRoom.id)">@chatRoom.name</a></li>
             }
         </ul>
     </pre>
+    <script src="@routes.Assets.at("javascripts/chatroom.js")" type="text/javascript"></script>
+    <script type="text/javascript">
+        ChatRoomActions.bindCreate({button: 'create_button', name: 'name', list: 'chatroom_list', errors: 'errors', show_url: '@routes.ChatRoomsController.show(0).url.dropRight(1)'});
+    </script>
 }

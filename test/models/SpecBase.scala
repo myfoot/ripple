@@ -5,8 +5,8 @@ import models.CoreSchema._
 import org.squeryl.adapters.H2Adapter
 import org.squeryl._
 import PrimitiveTypeMode._
-import org.specs2.mutable.Before
 import scala.Some
+import org.specs2.mock._
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,7 +15,7 @@ import scala.Some
  * Time: 16:19
  * To change this template use File | Settings | File Templates.
  */
-class RepositorySpecBase extends Specification with Before {
+class SpecBase extends Specification with Before with Mockito {
   def before = initialDB
 
   def initialDB = {

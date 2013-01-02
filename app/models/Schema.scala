@@ -6,8 +6,9 @@ import user.User
 import org.squeryl.KeyedEntity
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.Schema
+import models.util.Validations
 
-class BaseEntity extends KeyedEntity[Long] {
+class BaseEntity extends KeyedEntity[Long] with Validations {
   val id: Long = 0
   override def equals(obj:Any) = {
     obj.isInstanceOf[BaseEntity] && obj.asInstanceOf[BaseEntity].id == this.id
