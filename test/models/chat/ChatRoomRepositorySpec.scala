@@ -1,7 +1,6 @@
 package models.chat
 
-import models.RepositorySpecBase
-import models.user.{Administrator, User, UserRepository}
+import models.SpecBase
 import org.specs2.mutable.BeforeAfter
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
@@ -13,7 +12,7 @@ import models.CoreSchema._
  * Time: 18:35
  * To change this template use File | Settings | File Templates.
  */
-class ChatRoomRepositorySpec extends RepositorySpecBase {
+class ChatRoomRepositorySpec extends SpecBase {
   "ChatRoomRepository" should {
     "#find" in {
       "指定された名前の部屋が存在する場合はCharRoomオブジェクトを返す" in new withTestData {
@@ -41,6 +40,23 @@ class ChatRoomRepositorySpec extends RepositorySpecBase {
         val newRoom = ChatRoomRepository.findOrCreate(name)
         newRoom.name must equalTo(name)
         newRoom.isPersisted must beTrue
+      }
+    }
+
+    "#create" in {
+      "指定されたChatRoomオブジェクトが追加可能な場合はRightオブジェクトが取得できる" in new withTestData {
+        // TODO: 本当はstub化したいが、mixinしたtraitのメソッドをstub化しようとすると、エラーになる。UninitializedFieldError: Uninitialized field: Schema.scala: 11 (Validations.scala:23)
+//        val mockChatRoom = mock[ChatRoom]
+//        mockChatRoom.validate returns true
+        val mockChatRoom = ChatRoom("hoge-chat")
+        ChatRoomRepository.insert(mockChatRoom) must beRight(mockChatRoom)
+        ChatRoomRepository.find(mockChatRoom.name) must beSome
+      }
+      "指定されたChatRoomオブジェクトが追加不可能な場合はLeftオブジェクトが取得できる" in new withTestData {
+        // TODO: stub化
+        val mockChatRoom = ChatRoom(chatRoom.name)
+        ChatRoomRepository.insert(mockChatRoom) must beLeft
+        ChatRoomRepository.find(mockChatRoom.name) must beSome(chatRoom)
       }
     }
 
