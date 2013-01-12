@@ -4,9 +4,9 @@ import org.specs2.mutable._
 import org.squeryl._
 import PrimitiveTypeMode._
 import models.CoreSchema._
-import models.RepositorySpecBase
+import models.SpecBase
 
-class UserRepositorySpec extends RepositorySpecBase {
+class UserRepositorySpec extends SpecBase {
   "UserRepository" should {
     "#find" in {
       "指定された名前＆パスワードのユーザーが存在する場合はUserオブジェクトを返す" in new sampleUser {
