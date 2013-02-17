@@ -11,7 +11,8 @@ object ApplicationBuild extends Build {
     val appDependencies = Seq(
       "org.squeryl" %% "squeryl" % "0.9.5-2" withSources(),
       "mysql" % "mysql-connector-java" % "5.1.21",
-      "jp.t2v" % "play20.auth_2.9.1" % "0.3" withSources()
+      "jp.t2v" % "play20.auth_2.9.1" % "0.3" withSources(),
+      "org.mockito" % "mockito-all" % "1.9.0" % "test"
     )
 
   lazy val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
