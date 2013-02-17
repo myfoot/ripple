@@ -1,17 +1,18 @@
 package controllers.chat
 
-import controllers.chat.action.ChatAction._
-import play.libs.Akka
+import scala.concurrent.duration._
 import akka.actor.ActorRef
+import akka.util.Timeout
+import akka.pattern.ask
+import play.libs.Akka
 import play.api.libs.iteratee.Iteratee
+import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.JsValue
 import play.api.Logger
-import models.user.{LoggedInUser, User}
-import controllers.chat.ConnectionResult.Connected
 
-import akka.util
-import akka.util.duration._
-import akka.pattern.ask
+import controllers.chat.action.ChatAction._
+import controllers.chat.ConnectionResult.Connected
+import models.user.{LoggedInUser, User}
 
 object Robot {
 
@@ -22,7 +23,7 @@ object Robot {
 
     val robot = User("Robot", "robo@hoge.com", "", LoggedInUser)
 
-    implicit val timeout = util.Timeout(1 second)
+    implicit val timeout = Timeout(1 second)
     // Make the robot join the room
     chatRoom ? (Join(robot)) map {
       case Connected(robotChannel) =>

@@ -1,14 +1,14 @@
 package controllers.chat
 
 import akka.actor._
-import akka.util.duration._
-import akka.util
+import akka.util.Timeout
 import akka.pattern.ask
-import play.api.libs.concurrent._
+import scala.concurrent.duration._
+import play.api.libs.concurrent.Execution.Implicits._
 
 import play.api.libs.json._
 import play.api.libs.iteratee._
-import scala.collection.mutable.{Map => MutableMap}
+import scala.collection.mutable.{HashSet => MutableSet, Map => MutableMap}
 import models.user.User
 import controllers.chat.action.ChatAction._
 import controllers.chat.ConnectionResult.{Connected, CannotConnect}
@@ -16,17 +16,18 @@ import models.chat.ChatRoom
 import play.libs.Akka
 
 class ChatRoomActor extends Actor {
+  val members = MutableSet.empty[User]
 
-  val members = MutableMap.empty[User, PushEnumerator[JsValue]]
+  val (chatEnumerator, chatChannel) = Concurrent.broadcast[JsValue]
 
   def receive = {
     case Join(user) => {
-      val channel =  Enumerator.imperative[JsValue]( onStart = self ! NotifyJoin(user))
       if(members.contains(user)) {
         sender ! CannotConnect("This user is already joined")
       } else {
-        members += (user -> channel)
-        sender ! Connected(channel)
+        members += user
+        sender ! Connected(chatEnumerator)
+        self ! NotifyJoin(user)
       }
     }
 
@@ -45,29 +46,22 @@ class ChatRoomActor extends Actor {
   }
 
   def notifyAll(kind: String, user: User, text: String) {
-    val msg = JsObject(
-      Seq(
-        "kind" -> JsString(kind),
-        "user" -> JsString(user.name),
-        "message" -> JsString(text),
-        "members" -> JsArray(
-          members.keySet.toList.map(user => JsString(user.name))
-        )
-      )
+    val msg = Json.obj(
+      "kind" -> kind,
+      "user" -> user.name,
+      "message" -> text,
+      "members" ->
+        members.map(user => Json.toJson(user.name))
     )
-    members.foreach {
-      case (user, channel) => {
-        println("%s : %s".format(user.name, msg))
-        channel.push(msg)
-      }
-    }
+    members.foreach{user => println("%s : %s".format(user.name, msg))}
+    chatChannel.push(msg)
   }
 
 }
 
 object ChatRoomActor {
 
-  implicit val timeout = util.Timeout(1 second)
+  implicit val timeout = Timeout(1 second)
 
   val chatRoomActors = MutableMap.empty[ChatRoom, ActorRef]
 
@@ -87,7 +81,7 @@ object ChatRoomActor {
   }
 
   def join(chatRoom: ChatRoom, user: User) = {
-    (ChatRoomActor.getActor(chatRoom) ? Join(user)).asPromise.map {
+    (ChatRoomActor.getActor(chatRoom) ? Join(user)).map {
       case Connected(enumerator) =>
         val iteratee = Iteratee.foreach[JsValue] { event =>
           getActor(chatRoom) ! Talk(user, (event \ "text").as[String])
