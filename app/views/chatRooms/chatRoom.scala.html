@@ -13,12 +13,13 @@
     </div>
     
     <div id="onChat" class="row">
-        <div class="span10" id="main">
-            <div id="messages">
+        <div class="span8" id="main">
+            <div id="messages"></div>
+            <div>
+                <textarea id="talk"></textarea>
             </div>
-            <textarea id="talk"></textarea>
         </div>
-        <div class="span4">
+        <div class="span2">
             <h2>Members</h2>
             <ul id="members">
             </ul>
@@ -58,9 +59,11 @@
                 $(el).addClass(data.kind)
                 if(data.user == '@user.name') $(el).addClass('me')
                 $('#messages').append(el)
-                
+
+                $('#messages').scrollTop($('#messages').height() + ($("#messages").children().size() * el.height()));
+
                 // Update the members list
-                $("#members").html('') 
+                $("#members").html('')
                 $(data.members).each(function() {
                     $("#members").append('<li>' + this + '</li>')
                 })
