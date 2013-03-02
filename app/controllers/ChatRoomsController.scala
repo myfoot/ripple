@@ -34,7 +34,7 @@ object ChatRoomsController extends Controller with Auth with AuthConfigImpl {
 
   def index = authorizedAction(LoggedInUser){ user => implicit request =>
     request.requestType match {
-      case RequestType.XmlHttpRequest => Ok(Json.arr(ChatRoomRepository.all.map(Json.toJson(_))))
+      case RequestType.XmlHttpRequest => Ok(JsArray(ChatRoomRepository.all.map(Json.toJson(_))))
       case _ => Ok(views.html.chatRooms.index(user, ChatRoomRepository.all))
     }
   }
