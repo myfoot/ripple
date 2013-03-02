@@ -14,20 +14,19 @@
         <script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
     </head>
     <body>
-        <div class="topbar">
-            <div class="fill">
-                <div class="container">
-                    <a class="brand" href="@routes.ChatRoomsController.index()">Ripple</a>
-                    
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+              <div class="container">
+              <a class="brand" href="@routes.ChatRoomsController.index()">Ripple</a>
                     @connected.map { username =>
                         <div class="pull-right">
-                            <p class="pull-left">Logged in as @username —</p>
-                            @form(action=routes.SessionsController.logout(), 'class -> "pull-left") {
-                              <button type="submit" class="btn small">Logout</button>
+                            <p class="pull-left navbar-text">Logged in as @username —</p>
+                            @form(action=routes.SessionsController.logout(), 'class -> "pull-left navbar-form") {
+                            <button type="submit" class="btn btn-mini">Logout</button>
                             }
                         </div>
                     }.getOrElse{
-                        <div class="pull-right">
+                        <div class="pull-right navbar-text">
                             <span>ログインしてません</span>
                             <a href="@routes.SessionsController.index">Login</a>
                         </div>
