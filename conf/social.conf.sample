@@ -1,0 +1,9 @@
+social : {
+  twitter {
+    requestTokenUrl : "https://twitter.com/oauth/request_token"
+    accessTokenUrl : "https://twitter.com/oauth/access_token"
+    authorizationUrl : "https://twitter.com/oauth/authenticate"
+    consumerKey : ""
+    consumerSecret : ""
+  }
+}
