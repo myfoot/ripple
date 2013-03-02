@@ -1,6 +1,6 @@
 @(loginForm: Form[Option[models.user.User]])(implicit flash: Flash)
 
-@import helper._
+@import views.BootstrapHelper._
 
 @main(None) {
     <div>
@@ -11,13 +11,19 @@
             </p>
         </div>
     }
-    @helper.form(action=routes.SessionsController.create) {
-        <fieldset>
-            <legend>ログインしてください</legend>
-            @inputText(loginForm("name"), '_error -> loginForm.globalError, 'placeholder -> "Username", 'class -> "input-small")
-            @inputPassword(loginForm("password"), 'placeholder -> "Password", 'class -> "input-small")
-        </fieldset>
-        <div class="actions"><button class="btn" type="submit">Login</button></div>
+    @helper.form(action=routes.SessionsController.create, 'class -> "form-horizontal") {
+        <div class="control-group">
+            <div class="controls">
+                <label>ログインしてください</label>
+            </div>
+        </div>
+              @helper.inputText(loginForm("name"), '_error -> loginForm.globalError, 'placeholder -> "Username")
+              @helper.inputPassword(loginForm("password"), 'placeholder -> "Password")
+        <div class="control-group">
+            <div class="controls">
+                <div class="actions "><button class="btn btn-inverse" type="submit">Login</button></div>
+            </div>
+        </div>
     }
     </div>
 }
