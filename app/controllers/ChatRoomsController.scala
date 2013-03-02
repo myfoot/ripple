@@ -2,12 +2,11 @@ package controllers
 
 import play.api._
 import i18n.Messages
-import i18n.Messages.Message
 import libs.concurrent.Promise
 import libs.iteratee.{Enumerator, Input, Done}
 import play.api.mvc._
 import play.api.libs.json._
-import com.codahale.jerkson.Json._
+import play.api.libs.functional.syntax._
 import play.api.libs.json.Writes._
 import jp.t2v.lab.play20.auth.Auth
 
@@ -23,9 +22,19 @@ import play.api.data.Forms._
 
 object ChatRoomsController extends Controller with Auth with AuthConfigImpl {
 
+  // TODO: ControllerのBaseクラスとか作ってそっち持ってく？？
+  implicit val chatRoomWrites = new Writes[ChatRoom] {
+    def writes(o: ChatRoom): JsValue = {
+      Json.obj(
+        "id" -> o.id,
+        "name" -> o.name
+      )
+    }
+  }
+
   def index = authorizedAction(LoggedInUser){ user => implicit request =>
     request.requestType match {
-      case RequestType.XmlHttpRequest => Ok(generate(ChatRoomRepository.all.map(_.toMap)))
+      case RequestType.XmlHttpRequest => Ok(Json.arr(ChatRoomRepository.all.map(Json.toJson(_))))
       case _ => Ok(views.html.chatRooms.index(user, ChatRoomRepository.all))
     }
   }
@@ -41,15 +50,16 @@ object ChatRoomsController extends Controller with Auth with AuthConfigImpl {
   def create = authorizedAction(LoggedInUser){ user => implicit request =>
     createForm.bindFromRequest.fold(
       // errorはありえないけどね
-      errors => Ok(Json.toJson(Map("error" -> true, "success" -> false))),
+      errors => Ok(Json.obj("error" -> true, "success" -> false)),
       chatRoom => ChatRoomRepository.insert(chatRoom) match {
-        case Right(_) => Ok(generate(Map("success" -> true, "error" -> false, "messages" -> Map.empty)))
-        case Left(x) => Ok(generate(Map(
+        case Right(_) => Ok(Json.obj("success" -> true, "error" -> false, "messages" -> ""))
+        case Left(x) => Ok(Json.obj(
           "success" -> false,
           "error" -> true,
-          "messages" -> x.map{case (key, value) =>
-            (key.name, value.map(validationName => Messages("error.chatroom.%s.%s".format(key.name, validationName.name))))
-          }.toMap)))
+          "messages" -> Json.toJson(x.map{case (key, value) =>
+            (key.name, Json.toJson(value.map(validationName => Messages("error.chatroom.%s.%s".format(key.name, validationName.name)))))
+          }.toMap)
+        ))
       }
     )
   }
