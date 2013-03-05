@@ -22,3 +22,6 @@ bin
 # for IDEA
 .idea
 *.iml
+
+# for sample files
+conf/social.conf
