@@ -25,10 +25,11 @@
                             <button type="submit" class="btn btn-mini">Logout</button>
                             }
                         </div>
-                    }.getOrElse{
+                    }.getOrElse {
                         <div class="pull-right navbar-text">
                             <span>ログインしてません</span>
                             <a href="@routes.SessionsController.index">Login</a>
+                            <a href="@routes.TwitterSessionsController.authenticate">login as TwitterUser</a>
                         </div>
                     }
                     
