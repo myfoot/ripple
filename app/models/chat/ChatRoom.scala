@@ -28,7 +28,6 @@ class ChatRoom(val name:String) extends BaseEntity{
       true
     }
   }
-  def toMap = Map("id" -> id, "name" -> name)
 }
 
 object ChatRoom {

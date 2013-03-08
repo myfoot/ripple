@@ -5,15 +5,15 @@ import github.GitHub
 import google.Google
 import twitter.Twitter
 
-trait Provider extends SocialConfig {
+trait Provider extends ProviderConfig {
   val name:String
   val consumerToken: ConsumerToken
   def socialUser(token: Token): SocialUser
 }
 
 object Provider {
-  lazy val proviers = Seq(Twitter, GitHub, Facebook, Google)
-  def get(name:String) = proviers.find(_.name == name).getOrElse(Unknown)
+  private lazy val providers = Seq(Twitter, GitHub, Facebook, Google)
+  def get(name:String) = providers.find(_.name == name).getOrElse(Unknown)
 }
 
 object Unknown extends Provider{

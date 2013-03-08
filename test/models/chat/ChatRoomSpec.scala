@@ -2,7 +2,7 @@ package models.chat
 
 import org.specs2.mutable.{BeforeAfter, Before, Specification}
 import models.user.{Administrator, Role, User}
-import models.SpecBase
+import models.{WithPlayContext, SpecBase}
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
 
@@ -61,22 +61,17 @@ class ChatRoomSpec extends SpecBase {
       }
     }
   }
-  "#toMap" should {
-    "idとnameのMapが取得できる" in new withTestData {
-      chatRoom.toMap must equalTo(Map("id" -> chatRoom.id, "name" -> chatRoom.name))
-    }
-  }
 
-  trait withTestData extends BeforeAfter {
+  trait withTestData extends WithPlayContext {
     lazy val chatRoom = ChatRoom("test_room")
 
-    def before = {
+    override def before = {
       transaction {
         chatRoom.save
       }
     }
 
-    def after = {
+    override def after = {
       transaction {
         chatRooms.toList.foreach(c => chatRooms.deleteWhere(c2 => c2.id === c.id))
       }
