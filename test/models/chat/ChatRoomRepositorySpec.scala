@@ -1,7 +1,6 @@
 package models.chat
 
-import models.SpecBase
-import org.specs2.mutable.BeforeAfter
+import models.{WithPlayContext, SpecBase}
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
 
@@ -67,17 +66,17 @@ class ChatRoomRepositorySpec extends SpecBase {
     }
   }
 
-  trait withTestData extends BeforeAfter {
+  trait withTestData extends WithPlayContext {
     lazy val chatRoom = ChatRoom("test_room")
     lazy val chatRoom2 = ChatRoom("test_room2")
-    def before = {
+    override def before = {
       transaction {
         chatRoom.save
         chatRoom2.save
       }
     }
 
-    def after = {
+    override def after = {
       transaction {
         chatRooms.toList.foreach(c => chatRooms.deleteWhere(c2 => c2.id === c.id))
       }
