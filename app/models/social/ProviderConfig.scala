@@ -1,9 +1,9 @@
 package models.social
 
-trait SocialConfig {
-  // FIXME: model層がPlayに依存したくないので、util-evalを使いたいがScala2.10.0に対応していないので後でやる
+
+trait ProviderConfig {
   private lazy val conf = play.Play.application.configuration
-  private val socialConfKey = "social"
+  private lazy val socialConfKey = "social"
   lazy val requestTokenUrl: String = conf.getString("%s.%s.requestTokenUrl".format(socialConfKey, provider.name))
   lazy val accessTokenUrl: String = conf.getString("%s.%s.accessTokenUrl".format(socialConfKey, provider.name))
   lazy val authorizationUrl: String = conf.getString("%s.%s.authorizationUrl".format(socialConfKey, provider.name))

@@ -1,10 +1,9 @@
 package models.user
 
-import org.specs2.mutable._
 import org.squeryl._
 import PrimitiveTypeMode._
 import models.CoreSchema._
-import models.SpecBase
+import models.{WithPlayContext, SpecBase}
 import models.social.twitter.Twitter
 import models.social.SocialUser
 
@@ -28,15 +27,15 @@ class UserRepositorySpec extends SpecBase {
       }
     }
     ".insert" in {
-      "追加可能な場合はRight" in {
+      "追加可能な場合はRight" in new WithPlayContext {
         UserRepository.insert(validUser) must beRight(validUser)
       }
-      "追加不可能な場合はLeft" in {
+      "追加不可能な場合はLeft" in new WithPlayContext {
         UserRepository.insert(invalidUser) must beLeft
       }
     }
     ".insertAsSocialUser" in {
-      "登録可能な場合はUserとAccessTokenを登録する" in {
+      "登録可能な場合はUserとAccessTokenを登録する" in new WithPlayContext {
         val name = "hoge"
         val token = "aaaaaaaa"
         val secret = "bbbbbbbb"
@@ -61,16 +60,16 @@ class UserRepositorySpec extends SpecBase {
   lazy val validUser = User("name", "email", "pass", Administrator)
   lazy val invalidUser = User("", "", "pass", Administrator)
 
-  trait sampleUser extends BeforeAfter {
+  trait sampleUser extends WithPlayContext {
     val user = User("hoge", "foo", "bar", Administrator)
 
-    def before = {
+    override def before = {
       transaction {
         user.save
       }
     }
 
-    def after = {
+    override def after = {
       transaction {
         users.deleteWhere(u => u.id === user.id)
       }
