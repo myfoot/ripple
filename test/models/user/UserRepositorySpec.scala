@@ -3,11 +3,11 @@ package models.user
 import org.squeryl._
 import PrimitiveTypeMode._
 import models.CoreSchema._
-import models.{WithPlayContext, SpecBase}
+import models.{WithPlayContext, ModelSpecBase}
 import models.social.twitter.Twitter
 import models.social.SocialUser
 
-class UserRepositorySpec extends SpecBase {
+class UserRepositorySpec extends ModelSpecBase {
   "UserRepository" should {
     ".find" in {
       "指定された名前＆パスワードのユーザーが存在する場合はUserオブジェクトを返す" in new sampleUser {

@@ -1,8 +1,8 @@
 package models.user
 
-import models.SpecBase
+import models.ModelSpecBase
 
-class UserSpec extends SpecBase {
+class UserSpec extends ModelSpecBase {
   "User" should {
     "#validate" in {
       "name" in {
