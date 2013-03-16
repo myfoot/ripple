@@ -24,6 +24,8 @@ object ApplicationBuild extends Build {
       "t2v.jp repo" at "http://www.t2v.jp/maven-repo/",
       "twitter4j repo" at "http://twitter4j.org/maven2",
       "Twitter repo" at "http://maven.twttr.com/"
-    )
+    ),
+    testOptions := Nil,
+    testOptions += Tests.Argument(TestFrameworks.Specs2, "junitxml", "console")
   )
 }
