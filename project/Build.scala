@@ -14,6 +14,7 @@ object ApplicationBuild extends Build {
     "mysql" % "mysql-connector-java" % "5.1.21",
     "jp.t2v" %% "play21.auth" % "0.7" withSources(),
     "org.twitter4j" % "twitter4j-core" % "[3.0,)",
+    "com.jsuereth" %% "scala-arm" % "1.3",
     "com.twitter" % "util-eval" % "6.1.0" withSources(),
     "org.mockito" % "mockito-all" % "1.9.0" % "test"
   )
