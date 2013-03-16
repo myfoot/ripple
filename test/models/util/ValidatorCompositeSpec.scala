@@ -6,8 +6,8 @@ import org.specs2.specification.Scope
 
 class ValidatorCompositeSpec extends Specification with Mockito {
   "#validate" should {
-    "continue true" in {
-      "保持している全Validatorのvalidateを実行する" in {
+    "continue true" >> {
+      "保持している全Validatorのvalidateを実行する" >> {
         val validator1 = mockValidator("v1")
         validator1.validate returns Left(List('hoge))
         val validator2 = mockValidator("v2")
@@ -16,8 +16,8 @@ class ValidatorCompositeSpec extends Specification with Mockito {
         new ValidatorComposite(Seq(validator1, validator2)).validate must beLeft(List('hoge, 'foo))
       }
     }
-    "continue false" in {
-      "validateが失敗した場合、以降のvalidateを行わない" in {
+    "continue false" >> {
+      "validateが失敗した場合、以降のvalidateを行わない" >> {
         val validator1 = mockValidator("v1", false)
         validator1.validate returns Left(List('hoge))
         val validator2 = mockValidator("v2")
@@ -26,7 +26,7 @@ class ValidatorCompositeSpec extends Specification with Mockito {
         new ValidatorComposite(Seq(validator1, validator2)).validate must beLeft(List('hoge))
         there was no(validator2).validate
       }
-      "validateが成功した場合、以降のvalidateも行う" in {
+      "validateが成功した場合、以降のvalidateも行う" >> {
         val validator1 = mockValidator("v1", false)
         validator1.validate returns Validator.right
         val validator2 = mockValidator("v2")
@@ -38,7 +38,7 @@ class ValidatorCompositeSpec extends Specification with Mockito {
   }
 
   "#:+" should {
-    "指定されたvalidatorを追加したコンポジットを返す" in {
+    "指定されたvalidatorを追加したコンポジットを返す" >> {
       val validator1 = mockValidator("v1")
       val validator2 = mockValidator("v2")
       val newComposite = new ValidatorComposite(Seq(validator1)) :+ validator2
@@ -47,7 +47,7 @@ class ValidatorCompositeSpec extends Specification with Mockito {
   }
 
   "impliit .convertToComposite" should {
-    "Validatorオブジェクト同士を結合させた場合、Compositeになる" in {
+    "Validatorオブジェクト同士を結合させた場合、Compositeになる" >> {
       import ValidatorComposite._
       val v1 = mockValidator("v1")
       val v2 = mockValidator("v2")
