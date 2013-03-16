@@ -20,7 +20,7 @@ import _root_.models.user.{UserRepository, LoggedInUser}
 import play.api.data._
 import play.api.data.Forms._
 
-object ChatRoomsController extends Controller with Auth with AuthConfigImpl {
+object ChatRoomsController extends NeedAuthController {
 
   // TODO: ControllerのBaseクラスとか作ってそっち持ってく？？
   implicit val chatRoomWrites = new Writes[ChatRoom] {
