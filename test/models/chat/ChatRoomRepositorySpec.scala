@@ -1,6 +1,6 @@
 package models.chat
 
-import models.{WithPlayContext, SpecBase}
+import models.{WithPlayContext, ModelSpecBase}
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
 
@@ -11,7 +11,7 @@ import models.CoreSchema._
  * Time: 18:35
  * To change this template use File | Settings | File Templates.
  */
-class ChatRoomRepositorySpec extends SpecBase {
+class ChatRoomRepositorySpec extends ModelSpecBase {
   "ChatRoomRepository" should {
     "#find" in {
       "指定された名前の部屋が存在する場合はCharRoomオブジェクトを返す" in new withTestData {
