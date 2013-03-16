@@ -14,15 +14,19 @@ class ModelSpecBase extends Specification with Mockito {
     def model(value:String): A
 
     def define = {
-      "半角スペース" in new WithPlayContext with ValidationTest[A] {
+      "空文字は不可" >> new WithPlayContext with ValidationTest[A] {
+        val target: A = model("")
+        expectFailed()
+      }
+      "半角スペースのみは不可" >> new WithPlayContext with ValidationTest[A] {
         val target: A = model(" ")
         expectFailed()
       }
-      "全角スペース" in new WithPlayContext with ValidationTest[A] {
+      "全角スペースのみは不可" >> new WithPlayContext with ValidationTest[A] {
         val target: A = model("　")
         expectFailed()
       }
-      "半角スペース&全角スペース" in new WithPlayContext with ValidationTest[A] {
+      "半角スペース&全角スペースのみは不可" >> new WithPlayContext with ValidationTest[A] {
         val target: A = model(" 　　 ")
         expectFailed()
       }

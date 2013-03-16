@@ -13,28 +13,28 @@ import models.CoreSchema._
  */
 class ChatRoomRepositorySpec extends ModelSpecBase {
   "ChatRoomRepository" should {
-    "#find" in {
-      "指定された名前の部屋が存在する場合はCharRoomオブジェクトを返す" in new withTestData {
+    "#find" >> {
+      "指定された名前の部屋が存在する場合はCharRoomオブジェクトを返す" >> new withTestData {
         ChatRoomRepository.find(chatRoom.name) must beSome(chatRoom)
       }
-      "指定された名前の部屋が存在しない場合は何も返さない" in new withTestData {
+      "指定された名前の部屋が存在しない場合は何も返さない" >> new withTestData {
         ChatRoomRepository.find("hogefoobar") must beNone
       }
     }
-    "#find(id)" in {
-      "指定したIDの部屋が存在する場合はSome(ChatRoom)が取得できる" in new withTestData {
+    "#find(id)" >> {
+      "指定したIDの部屋が存在する場合はSome(ChatRoom)が取得できる" >> new withTestData {
         ChatRoomRepository.find(chatRoom.id) must beSome(chatRoom)
       }
-      "指定したIDの部屋が存在しない場合はNoneが返る" in new withTestData {
+      "指定したIDの部屋が存在しない場合はNoneが返る" >> new withTestData {
         ChatRoomRepository.find(-1) must beNone
       }
     }
 
-    "#findOrCreate" in {
-      "指定された名前の部屋が存在する場合はCharRoomオブジェクトを返す" in new withTestData {
+    "#findOrCreate" >> {
+      "指定された名前の部屋が存在する場合はCharRoomオブジェクトを返す" >> new withTestData {
         ChatRoomRepository.findOrCreate(chatRoom.name) must equalTo(chatRoom)
       }
-      "指定された名前の部屋が存在しない場合は新規作成して返す" in new withTestData {
+      "指定された名前の部屋が存在しない場合は新規作成して返す" >> new withTestData {
         val name = "hogefoobar"
         val newRoom = ChatRoomRepository.findOrCreate(name)
         newRoom.name must equalTo(name)
@@ -42,8 +42,8 @@ class ChatRoomRepositorySpec extends ModelSpecBase {
       }
     }
 
-    "#create" in {
-      "指定されたChatRoomオブジェクトが追加可能な場合はRightオブジェクトが取得できる" in new withTestData {
+    "#create" >> {
+      "指定されたChatRoomオブジェクトが追加可能な場合はRightオブジェクトが取得できる" >> new withTestData {
         // TODO: 本当はstub化したいが、mixinしたtraitのメソッドをstub化しようとすると、エラーになる。UninitializedFieldError: Uninitialized field: Schema.scala: 11 (Validations.scala:23)
 //        val mockChatRoom = mock[ChatRoom]
 //        mockChatRoom.validate returns true
@@ -51,7 +51,7 @@ class ChatRoomRepositorySpec extends ModelSpecBase {
         ChatRoomRepository.insert(mockChatRoom) must beRight(mockChatRoom)
         ChatRoomRepository.find(mockChatRoom.name) must beSome
       }
-      "指定されたChatRoomオブジェクトが追加不可能な場合はLeftオブジェクトが取得できる" in new withTestData {
+      "指定されたChatRoomオブジェクトが追加不可能な場合はLeftオブジェクトが取得できる" >> new withTestData {
         // TODO: stub化
         val mockChatRoom = ChatRoom(chatRoom.name)
         ChatRoomRepository.insert(mockChatRoom) must beLeft
@@ -59,8 +59,8 @@ class ChatRoomRepositorySpec extends ModelSpecBase {
       }
     }
 
-    "#all" in {
-      "全ての部屋が取得できる" in new withTestData {
+    "#all" >> {
+      "全ての部屋が取得できる" >> new withTestData {
         ChatRoomRepository.all.size must equalTo(2)
       }
     }

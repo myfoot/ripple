@@ -4,24 +4,20 @@ import models.ModelSpecBase
 
 class UserSpec extends ModelSpecBase {
   "User" should {
-    "#validate" in {
-      "name" in {
-        "空文字不可" in {
-          User("", "email", "password", Administrator).validate must beLeft
-          User(" ", "email", "password", Administrator).validate must beLeft
-          User("　", "email", "password", Administrator).validate must beLeft
+    "#validate" >> {
+      "name" >> {
+        "空文字不可" >> {
+          verifyRequiredText(User(_, "email", "password", Administrator))
         }
       }
-      "email" in {
-        "emailの形式以外は登録不可" in {
+      "email" >> {
+        "emailの形式以外は登録不可" >> {
           failure
         }.pendingUntilFixed("formatチェックはTODO")
       }
-      "password" in {
-        "空文字不可" in {
-          User("hoge", "email", "", Administrator).validate must beLeft
-          User("hoge", "email", " ", Administrator).validate must beLeft
-          User("hoge", "email", "　", Administrator).validate must beLeft
+      "password" >> {
+        "空文字不可" >> {
+          verifyRequiredText(User("hoge", "email", _, Administrator))
         }
       }
     }
