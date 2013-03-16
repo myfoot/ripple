@@ -122,3 +122,15 @@ ul, ol, pre {
 .message.join, .message.quit {
     background: #D9E7FB;
 }
+
+.create-room {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-box;
+    display: box;
+}
+
+.create-room #name {
+    margin-right: 10px;
+    height: 100%;
+}
