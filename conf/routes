@@ -7,6 +7,9 @@ GET     /room/chat/:id              controllers.ChatRoomsController.chat(id:Long
 GET     /room/:id                   controllers.ChatRoomsController.show(id:Long)
 POST    /room                       controllers.ChatRoomsController.create
 
+#music
+POST    /music                      controllers.MusicsController.create
+
 #login
 GET     /login                      controllers.SessionsController.index
 POST    /login                      controllers.SessionsController.create

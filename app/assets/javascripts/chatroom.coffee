@@ -41,4 +41,21 @@ root.ChatRoomActions = {
     $('#' + options.button).click(->
       new ChatRoom(options).create()
     )
+
+  bindAjaxFilePost: (id) ->
+    $form = $("##{id}")
+    $form.submit(=>
+      fd = new FormData($form[0])
+      $.ajax($form.attr("action"), {
+        type: 'post',
+        processData: false,
+        contentType: false,
+        data: fd,
+        dataType: 'html',
+        success: (data) ->
+          console.log(data)
+      })
+      false
+    )
+
 }
