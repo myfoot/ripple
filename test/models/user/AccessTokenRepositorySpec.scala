@@ -1,6 +1,6 @@
 package models.user
 
-import models.{WithPlayContext, SpecBase}
+import models.{WithPlayContext, ModelSpecBase}
 import org.specs2.mutable.BeforeAfter
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
@@ -10,7 +10,7 @@ import models.social.Unknown
 import org.codehaus.jackson.map.`type`.TypeFactory
 import org.specs2.execute.{Result, AsResult}
 
-class AccessTokenRepositorySpec extends SpecBase {
+class AccessTokenRepositorySpec extends ModelSpecBase {
   ".find" should {
     "指定された provider & token & secret のデータが存在する場合はSome" in new withSampleData{
       AccessTokenRepository.find(token.provider, token.token, token.secret) must beSome(token)

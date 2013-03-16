@@ -1,11 +1,11 @@
 package models.user
 
-import models.{WithPlayContext, SpecBase}
+import models.{WithPlayContext, ModelSpecBase}
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
 import models.social.twitter.Twitter
 
-class AccessTokenSpec extends SpecBase {
+class AccessTokenSpec extends ModelSpecBase {
   ".apply" should {
     "tokenとsecretはtrimされる" in new WithPlayContext {
       AccessToken(Twitter, " hoge　", "　 foo hoge  ", 0) must equalTo(AccessToken(Twitter, "hoge", "foo hoge", 0))
