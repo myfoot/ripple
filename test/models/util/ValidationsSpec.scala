@@ -12,7 +12,7 @@ class ValidationsSpec extends Specification with Mockito {
         'bar  -> mockSuccessValidator('xxx)
       )
     }
-    "validatorsで定義されたvalidationを行い結果を返す" in {
+    "validatorsで定義されたvalidationを行い結果を返す" >> {
       println(model.validate)
       model.validate must beLeft(Map('hoge -> List('unique), 'foo -> List('unique, 'number)))
     }

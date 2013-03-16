@@ -9,33 +9,33 @@ import models.social.SocialUser
 
 class UserRepositorySpec extends ModelSpecBase {
   "UserRepository" should {
-    ".find" in {
-      "指定された名前＆パスワードのユーザーが存在する場合はUserオブジェクトを返す" in new sampleUser {
+    ".find" >> {
+      "指定された名前＆パスワードのユーザーが存在する場合はUserオブジェクトを返す" >> new sampleUser {
         UserRepository.find(user.name, user.password) must beSome(user)
       }
-      "指定された名前＆パスワードのユーザーが存在しない場合は何も返さない" in new sampleUser {
+      "指定された名前＆パスワードのユーザーが存在しない場合は何も返さない" >> new sampleUser {
         UserRepository.find("", "") must beNone
       }
     }
-    ".findById" in {
-      "指定された名前＆パスワードのユーザーが存在する場合はUserオブジェクトを返す" in new sampleUser {
+    ".findById" >> {
+      "指定された名前＆パスワードのユーザーが存在する場合はUserオブジェクトを返す" >> new sampleUser {
         println(UserRepository.findById(user.id).map(_.role))
         UserRepository.findById(user.id) must beSome(user)
       }
-      "指定された名前＆パスワードのユーザーが存在しない場合は何も返さない" in new sampleUser {
+      "指定された名前＆パスワードのユーザーが存在しない場合は何も返さない" >> new sampleUser {
         UserRepository.findById(user.id+1) must beNone
       }
     }
-    ".insert" in {
-      "追加可能な場合はRight" in new WithPlayContext {
+    ".insert" >> {
+      "追加可能な場合はRight" >> new WithPlayContext {
         UserRepository.insert(validUser) must beRight(validUser)
       }
-      "追加不可能な場合はLeft" in new WithPlayContext {
+      "追加不可能な場合はLeft" >> new WithPlayContext {
         UserRepository.insert(invalidUser) must beLeft
       }
     }
-    ".insertAsSocialUser" in {
-      "登録可能な場合はUserとAccessTokenを登録する" in new WithPlayContext {
+    ".insertAsSocialUser" >> {
+      "登録可能な場合はUserとAccessTokenを登録する" >> new WithPlayContext {
         val name = "hoge"
         val token = "aaaaaaaa"
         val secret = "bbbbbbbb"

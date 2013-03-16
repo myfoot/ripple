@@ -12,19 +12,19 @@ import org.specs2.execute.{Result, AsResult}
 
 class AccessTokenRepositorySpec extends ModelSpecBase {
   ".find" should {
-    "指定された provider & token & secret のデータが存在する場合はSome" in new withSampleData{
+    "指定された provider & token & secret のデータが存在する場合はSome" >> new withSampleData{
       AccessTokenRepository.find(token.provider, token.token, token.secret) must beSome(token)
     }
-    "指定された provider & token & secret のデータが存在しない場合はNone" in new withSampleData{
+    "指定された provider & token & secret のデータが存在しない場合はNone" >> new withSampleData{
       AccessTokenRepository.find(Unknown, "other-token", token.secret) must beNone
     }
   }
   ".insert" should {
-    "追加可能な場合はRight" in new withSampleData {
+    "追加可能な場合はRight" >> new withSampleData {
       val reqToken = AccessToken(Facebook, "token", "secret", user.id)
       AccessTokenRepository.insert(reqToken) must beRight(reqToken)
     }
-    "追加不可能な場合はLeft" in new withSampleData{
+    "追加不可能な場合はLeft" >> new withSampleData{
       val reqToken = AccessToken(Facebook, "", "secret", user.id)
       AccessTokenRepository.insert(reqToken) must beLeft
     }
