@@ -1,6 +1,7 @@
 package models
 
 import chat.ChatRoom
+import music.Music
 import user.{AccessToken, User}
 
 import org.squeryl.KeyedEntity
@@ -19,6 +20,7 @@ object CoreSchema extends Schema {
   val users = table[User]("user")
   val chatRooms = table[ChatRoom]("chat_room")
   val accessTokens = table[AccessToken]("access_token")
+  val musics = table[Music]("music")
 
   on(users)(ent => declare(
     ent.id is(autoIncremented),
@@ -37,6 +39,10 @@ object CoreSchema extends Schema {
     ent.userId is(dbType("varchar(255)")),
     ent.token is(unique, dbType("varchar(255)")),
     ent.secret is(unique, dbType("varchar(255)"))
+  ))
+
+  on(musics)(ent => declare(
+    ent.id is(autoIncremented)
   ))
 
   val userToRequestToken =
