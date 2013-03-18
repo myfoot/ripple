@@ -1,4 +1,5 @@
 import sbt._
+import org.scalastyle.sbt.ScalastylePlugin
 import Keys._
 import play.Project._
 
@@ -19,7 +20,9 @@ object ApplicationBuild extends Build {
     "org.mockito" % "mockito-all" % "1.9.0" % "test"
   )
 
-  lazy val appSettings = Defaults.defaultSettings ++ Seq(ScctPlugin.instrumentSettings: _*)
+  lazy val appSettings = Defaults.defaultSettings ++
+                         ScalastylePlugin.Settings ++
+                         Seq(ScctPlugin.instrumentSettings: _*)
 
   lazy val main = play.Project(appName, appVersion, appDependencies, settings = appSettings).settings(
     scalaVersion := "2.10.0",
