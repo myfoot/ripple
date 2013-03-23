@@ -2,19 +2,48 @@ package models.music
 
 import models.{WithPlayContext, ModelSpecBase}
 import java.io.{FileInputStream, InputStream, File}
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.tag.FieldKey
+import org.specs2.internal.scalaz.One
+import play.mvc.WebSocket.In
+import models.util.audio.AudioReadException
+import models.util.audio.AudioReader.ErrorMessages
 
 class MusicSpec extends ModelSpecBase {
-  val testDataName = "test-data.mp3"
-  val testDataPath = s"test/data/$testDataName"
+  val mp3TestDataName = "test-data.mp3"
+  val mp3TestDataPath = s"test/data/$mp3TestDataName"
+
+  val m4aTestDataName = "test-data.m4a"
+  val m4aTestDataPath = s"test/data/$m4aTestDataName"
+  val m4aAlbumName = "One In A Million"
+  val m4aArtistName = "Aaliyah"
+  val m4aSongTitle  = "Came To Give Love (Outro)"
+
+  val nonMusicTestDataPath = "test/data/hoge"
 
   "Music" should {
     ".apply(File)" >> {
       "ファイル名が取得できる" >> {
-        Music(new File(testDataPath)).name must_==(testDataName)
+        Music(new File(mp3TestDataPath)).name must_== mp3TestDataName
       }
       "ファイルのデータが配列で取得できる" >> {
-        val file = new File(testDataPath)
-        Music(file).rawData must_==(read(file))
+        val file = new File(mp3TestDataPath)
+        Music(file).rawData must_== read(file)
+      }
+      "曲名が取得できる" >> {
+        val file = new File(m4aTestDataPath)
+        Music(file).songTitle must_== m4aSongTitle
+      }
+      "アルバム名が取得できる" >> {
+        val file = new File(m4aTestDataPath)
+        Music(file).albumName must_== m4aAlbumName
+      }
+      "アーティスト名が取得できる" >> {
+        val file = new File(m4aTestDataPath)
+        Music(file).artistName must_== m4aArtistName
+      }
+      "音楽ファイル以外はエラー" >> {
+        Music(new File(nonMusicTestDataPath)) must throwA[AudioReadException](message = ErrorMessages.NotMusicFile)
       }
     }
     "#validate" >> {
