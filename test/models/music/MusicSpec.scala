@@ -1,6 +1,6 @@
 package models.music
 
-import models.ModelSpecBase
+import models.{WithPlayContext, ModelSpecBase}
 import java.io.{FileInputStream, InputStream, File}
 
 class MusicSpec extends ModelSpecBase {
@@ -15,6 +15,19 @@ class MusicSpec extends ModelSpecBase {
       "ファイルのデータが配列で取得できる" >> {
         val file = new File(testDataPath)
         Music(file).rawData must_==(read(file))
+      }
+    }
+    "#validate" >> {
+      "name" >> {
+        "名前が空白のみの場合は作成できない" >> {
+          verifyRequiredText(new Music(_ , Array.emptyByteArray))
+        }
+      }
+      "rawData" >> {
+        "空データでは登録できない" >> new WithPlayContext with ValidationTest[Music] {
+          val target: Music = new Music("hoge", Array.emptyByteArray)
+          expectFailed()
+        }
       }
     }
   }
