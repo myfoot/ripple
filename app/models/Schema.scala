@@ -42,7 +42,11 @@ object CoreSchema extends Schema {
   ))
 
   on(musics)(ent => declare(
-    ent.id is(autoIncremented)
+    ent.id is(autoIncremented),
+    ent.rawData is(dbType("blob")),
+    ent.albumName  is(dbType("varchar(255)")),
+    ent.artistName is(dbType("varchar(255)")),
+    ent.songTitle  is(dbType("varchar(255)"))
   ))
 
   val userToRequestToken =
