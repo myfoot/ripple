@@ -8,6 +8,9 @@ import models.util.{ValidatorTypes, Validator}
 import models.util.Validations._
 import util.string.StringExtension._
 import org.squeryl.annotations.Column
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.tag.FieldKey
+import models.util.audio.AudioReader
 
 class Music(val name: String,
             @Column("raw_data")
@@ -32,11 +35,20 @@ class Music(val name: String,
 
 object Music {
   def apply(rawData: File) = {
-    val file = managed(new Fin(rawData)).map{ in =>
-      val buf = new Array[Byte](rawData.length.toInt)
+    val audio = AudioReader(rawData)
+    new Music(
+      name = rawData.getName.trimSpaces,
+      rawData = read(rawData),
+      artistName = audio.artistName,
+      albumName = audio.albumName,
+      songTitle = audio.songTitle)
+  }
+
+  private def read(data: File) = {
+    managed(new Fin(data)).map{ in =>
+      val buf = new Array[Byte](data.length.toInt)
       in.read(buf)
       buf
     }.opt.getOrElse(Array.emptyByteArray)
-    new Music(rawData.getName.trimSpaces, file, "", "", "")
   }
 }
