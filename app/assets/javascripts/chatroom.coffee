@@ -54,6 +54,11 @@ root.ChatRoomActions = {
         dataType: 'html',
         success: (data) ->
           console.log(data)
+        error: (xhr, status, error) ->
+          console.log("error");
+          console.log(xhr.responseText);
+          console.log(status);
+          console.log(error);
       })
       false
     )
