@@ -1,2 +1,5 @@
 error.chatroom.name.unique=This name is already used.
 error.chatroom.name.requireText=name is required.
+
+error.music.file.invalidContentType=invalid file type.
+error.music.file.required=file not exist.
