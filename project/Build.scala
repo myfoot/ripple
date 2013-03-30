@@ -17,6 +17,7 @@ object ApplicationBuild extends Build {
     "org.twitter4j" % "twitter4j-core" % "[3.0,)",
     "com.jsuereth" %% "scala-arm" % "1.3",
     "com.twitter" % "util-eval" % "6.1.0" withSources(),
+    "org" % "jaudiotagger" % "2.0.3" withSources(),
     "org.mockito" % "mockito-all" % "1.9.0" % "test"
   )
 
