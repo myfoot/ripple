@@ -44,6 +44,7 @@ object MusicsController extends NeedAuthController {
     val successKey = "success"
     val errorKey = "error"
     def success(file: FilePart[TemporaryFile]) = Ok(Json.obj(successKey -> true, errorKey -> false))
+    def success(music: Music) = Ok(Json.obj(successKey -> true, errorKey -> false, "music" -> Json.obj("title" -> music.songTitle)))
     def error(messageKey: String) = Forbidden(Json.obj(successKey -> false, errorKey -> Messages(messageKey)))
   }
 }
