@@ -10,7 +10,7 @@ import util.string.StringExtension._
 import org.squeryl.annotations.Column
 import org.jaudiotagger.audio.AudioFileIO
 import org.jaudiotagger.tag.FieldKey
-import models.util.audio.AudioReader
+import models.util.audio.{AudioReadException, AudioReader}
 
 class Music(val name: String,
             @Column("raw_data")
@@ -35,14 +35,20 @@ class Music(val name: String,
 
 object Music {
   def apply(rawData: File) = {
-    val audio = AudioReader(rawData)
-    new Music(
-      name = rawData.getName.trimSpaces,
-      rawData = read(rawData),
-      artistName = audio.artistName,
-      albumName = audio.albumName,
-      songTitle = audio.songTitle)
+    try {
+      val audio = AudioReader(rawData)
+      new Music(
+        name = rawData.getName.trimSpaces,
+        rawData = read(rawData),
+        artistName = audio.artistName,
+        albumName = audio.albumName,
+        songTitle = audio.songTitle)
+    } catch {
+      case e: AudioReadException => InvalidMusic(rawData)
+    }
   }
+
+  private def InvalidMusic(data: File) = new Music(data.getName.trimSpaces, Array.emptyByteArray, "", "", "")
 
   private def read(data: File) = {
     managed(new Fin(data)).map{ in =>
