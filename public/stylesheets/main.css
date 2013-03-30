@@ -128,9 +128,11 @@ ul, ol, pre {
     display: -moz-box;
     display: -ms-box;
     display: box;
+    height: 5%;
 }
 
 .create-room #name {
+    height: 25px;
+    margin-bottom :0;
     margin-right: 10px;
-    height: 100%;
 }
