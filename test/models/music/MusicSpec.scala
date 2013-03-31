@@ -2,12 +2,6 @@ package models.music
 
 import models.{WithPlayContext, ModelSpecBase}
 import java.io.{FileInputStream, InputStream, File}
-import org.jaudiotagger.audio.AudioFileIO
-import org.jaudiotagger.tag.FieldKey
-import org.specs2.internal.scalaz.One
-import play.mvc.WebSocket.In
-import models.util.audio.AudioReadException
-import models.util.audio.AudioReader.ErrorMessages
 
 class MusicSpec extends ModelSpecBase {
   val mp3TestDataName = "test-data.mp3"
@@ -42,8 +36,8 @@ class MusicSpec extends ModelSpecBase {
         val file = new File(m4aTestDataPath)
         Music(file).artistName must_== m4aArtistName
       }
-      "音楽ファイル以外はエラー" >> {
-        Music(new File(nonMusicTestDataPath)) must throwA[AudioReadException](message = ErrorMessages.NotMusicFile)
+      "音楽ファイル以外の場合は空データになる" >> {
+        Music(new File(nonMusicTestDataPath)).rawData must_== Array.emptyByteArray
       }
     }
     "#validate" >> {
