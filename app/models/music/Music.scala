@@ -35,6 +35,7 @@ class Music(val name: String,
 
 object Music {
   def apply(rawData: File) = {
+    println(s"Music.apply => rawData is empty? : ${read(rawData).isEmpty}")
     try {
       val audio = AudioReader(rawData)
       new Music(
@@ -44,7 +45,7 @@ object Music {
         albumName = audio.albumName,
         songTitle = audio.songTitle)
     } catch {
-      case e: AudioReadException => InvalidMusic(rawData)
+      case e: AudioReadException => e.printStackTrace();InvalidMusic(rawData)
     }
   }
 
