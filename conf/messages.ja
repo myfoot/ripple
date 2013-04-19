@@ -3,3 +3,4 @@ error.chatroom.name.requireText=名前の入力は必須です。
 
 error.music.file.invalidContentType=ファイル形式が不正です。
 error.music.file.required=ファイルを選択して送信してください。
+error.music.invalid.parameter=送信されたデータが不正です。

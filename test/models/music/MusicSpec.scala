@@ -61,8 +61,6 @@ class MusicSpec extends ModelSpecBase {
         transaction {
           val chat = ChatRoom("hoge")
           val music = Music(new File(mp3TestDataPath))
-          chat.save
-          chat.isPersisted must beTrue
           chat.musics.associate(music).chatRoomId must_== chat.id
           music.isPersisted must beTrue
         }

@@ -27,7 +27,7 @@
     </div>
     
     <div>
-        <form id="upload-form" action="@routes.MusicsController.create()">
+        <form id="upload-form" action="@routes.MusicsController.create(chatRoom.id)">
             <input type="file" name="file">
             <button>Send</button>
         </form>

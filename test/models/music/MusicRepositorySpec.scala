@@ -1,8 +1,12 @@
 package models.music
 
 import models.{WithPlayContext, ModelSpecBase}
-import java.io.File
 import models.util.RequireTextValidator
+import models.chat.ChatRoom
+import models.CoreSchema._
+import java.io.File
+import org.squeryl.PrimitiveTypeMode._
+
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,12 +21,20 @@ class MusicRepositorySpec extends ModelSpecBase {
   lazy val invalidMusic = new Music("", Array.emptyByteArray)
   "MusicRepository" should {
     ".insert" >> {
-      "追加可能な場合はRightオブジェクトが取得できる" >> new WithPlayContext {
-        MusicRepository.insert(validMusic) must beRight(validMusic)
+      "追加可能な場合はRightオブジェクトが取得できる" >> new withData {
+        MusicRepository.insert(chatRoom, validMusic) must beRight(validMusic)
       }
-      "追加不可能な場合はLeftオブジェクトが取得できる" >> new WithPlayContext {
-        MusicRepository.insert(invalidMusic) must beLeft(Map('name -> List(RequireTextValidator.KEY), 'rawData -> List('empty)))
+      "追加不可能な場合はLeftオブジェクトが取得できる" >> new withData {
+        MusicRepository.insert(chatRoom, invalidMusic) must beLeft(Map('name -> List(RequireTextValidator.KEY), 'rawData -> List('empty)))
       }
+    }
+  }
+
+  trait withData extends WithPlayContext {
+    var chatRoom = ChatRoom("aaa")
+
+    override def before {
+      chatRoom.save
     }
   }
 }
