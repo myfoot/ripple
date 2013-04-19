@@ -2,6 +2,9 @@ package models.music
 
 import models.{WithPlayContext, ModelSpecBase}
 import java.io.{FileInputStream, InputStream, File}
+import models.chat.ChatRoom
+import org.squeryl.PrimitiveTypeMode._
+import models.CoreSchema._
 
 class MusicSpec extends ModelSpecBase {
   val mp3TestDataName = "test-data.mp3"
@@ -50,6 +53,18 @@ class MusicSpec extends ModelSpecBase {
         "空データでは登録できない" >> new WithPlayContext with ValidationTest[Music] {
           val target: Music = new Music("hoge", Array.emptyByteArray)
           expectFailed()
+        }
+      }
+    }
+    "relations" >> {
+      "chatroomに紐づけて登録することができる" >>  new WithPlayContext {
+        transaction {
+          val chat = ChatRoom("hoge")
+          val music = Music(new File(mp3TestDataPath))
+          chat.save
+          chat.isPersisted must beTrue
+          chat.musics.associate(music).chatRoomId must_== chat.id
+          music.isPersisted must beTrue
         }
       }
     }

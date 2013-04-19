@@ -9,6 +9,7 @@ CREATE TABLE music (
     artist_name varchar(255),
     album_name varchar(255),
     song_title varchar(255),
+    chat_room_id int(10) NOT NULL,
     PRIMARY KEY (id)
 );
 
