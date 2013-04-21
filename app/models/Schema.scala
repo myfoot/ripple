@@ -46,10 +46,15 @@ object CoreSchema extends Schema {
     ent.rawData is(dbType("blob")),
     ent.albumName  is(dbType("varchar(255)")),
     ent.artistName is(dbType("varchar(255)")),
-    ent.songTitle  is(dbType("varchar(255)"))
+    ent.songTitle  is(dbType("varchar(255)")),
+    ent.chatRoomId is(dbType("int(10)"))
   ))
 
   val userToRequestToken =
     oneToManyRelation(users, accessTokens)
       .via((user, token) => user.id === token.userId)
+
+  val chatRoomToMusic =
+    oneToManyRelation(chatRooms, musics)
+      .via((chat, music) => chat.id === music.chatRoomId)
 }

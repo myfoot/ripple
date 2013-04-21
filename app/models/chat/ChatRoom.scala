@@ -1,6 +1,6 @@
 package models.chat
 
-import models.BaseEntity
+import models.{CoreSchema, BaseEntity}
 import models.user.User
 import collection.mutable.{Set => MutableSet}
 import util.string.StringExtension._
@@ -18,6 +18,8 @@ class ChatRoom(val name:String) extends BaseEntity{
   override lazy val validators: Map[Symbol, Validator] = Map(
     'name -> (requiredText(name, false) :+ unique(ChatRoomRepository.find(name)))
   )
+
+  def musics = CoreSchema.chatRoomToMusic.left(this)
 
   def join(user:User):Boolean = updateMembers({_ contains user}, {_ += user})
   def leave(user:User):Boolean = updateMembers({x => !(x contains user)}, {_ -= user})

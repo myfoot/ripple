@@ -3,3 +3,4 @@ error.chatroom.name.requireText=name is required.
 
 error.music.file.invalidContentType=invalid file type.
 error.music.file.required=file not exist.
+error.music.invalid.parameter=Data you send was invalid.

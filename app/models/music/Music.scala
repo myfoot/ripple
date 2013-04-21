@@ -1,6 +1,6 @@
 package models.music
 
-import models.BaseEntity
+import models.{CoreSchema, BaseEntity}
 import java.io.{FileInputStream => Fin, File}
 
 import resource._
@@ -20,7 +20,9 @@ class Music(val name: String,
             @Column("album_name")
             val albumName: String,
             @Column("song_title")
-            val songTitle: String) extends BaseEntity {
+            val songTitle: String,
+            @Column("chat_room_id")
+            val chatRoomId: Long = Music.unPersistId) extends BaseEntity {
   type ModelClass = Music
   def this(name: String, rawData: Array[Byte]) = this(name.trimSpaces, rawData, "", "", "")
 
@@ -31,9 +33,11 @@ class Music(val name: String,
       val continue: Boolean = false
     }
   )
+
 }
 
 object Music {
+  val unPersistId = -1
   def apply(rawData: File) = {
     println(s"Music.apply => rawData is empty? : ${read(rawData).isEmpty}")
     try {
