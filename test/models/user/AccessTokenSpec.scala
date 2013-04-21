@@ -1,13 +1,14 @@
 package models.user
 
-import models.{WithPlayContext, ModelSpecBase}
+import models.{ModelSpecBase}
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
 import models.social.twitter.Twitter
+import org.specs2.mutable.BeforeAfter
 
 class AccessTokenSpec extends ModelSpecBase {
   ".apply" should {
-    "tokenとsecretはtrimされる" >> new WithPlayContext {
+    "tokenとsecretはtrimされる" >> {
       AccessToken(Twitter, " hoge　", "　 foo hoge  ", 0) must equalTo(AccessToken(Twitter, "hoge", "foo hoge", 0))
     }
   }
@@ -34,18 +35,18 @@ class AccessTokenSpec extends ModelSpecBase {
     }
   }
 
-  trait withTestData extends WithPlayContext {
+  trait withTestData extends BeforeAfter {
     lazy val user = User("name","email", "pass", Administrator)
     lazy val requestToken = AccessToken(Twitter, "token", "secret", user.id)
 
-    override def before = {
+    def before = {
       transaction {
         user.save
         requestToken.save
       }
     }
 
-    override def after = {
+    def after = {
       transaction {
         accessTokens.deleteWhere(r => r.id === requestToken.id)
         users.deleteWhere(u => u.id === user.id)
