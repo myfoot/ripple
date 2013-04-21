@@ -19,7 +19,7 @@ import java.lang.IllegalStateException
  * Time: 15:33
  * To change this template use File | Settings | File Templates.
  */
-object TwitterSessionsController extends Controller with LoginLogout with AuthConfigImpl {
+object TwitterSessionsController extends RippleController with LoginLogout with AuthConfigImpl {
 
   val oauthClient = OAuth(
     ServiceInfo(
@@ -33,7 +33,7 @@ object TwitterSessionsController extends Controller with LoginLogout with AuthCo
   val tokenKey = "token-twitter"
   val secretKey = "secret-twitter"
 
-  def authenticate = Action { implicit request =>
+  def authenticate = withTransaction{ implicit request =>
     request.getQueryString("oauth_verifier").map { verifier =>
       handleAccessToken(verifier)
     }.getOrElse {
@@ -50,6 +50,7 @@ object TwitterSessionsController extends Controller with LoginLogout with AuthCo
             rippleUser(accessToken).map{user =>
               gotoLoginSucceeded(user.id)
             }.getOrElse {
+              println("not found user")
               redirectLogin
             }
           }
@@ -84,14 +85,14 @@ object TwitterSessionsController extends Controller with LoginLogout with AuthCo
   }
 
   private def rippleUser(accessToken: RequestToken): Option[models.user.User] = {
-    AccessTokenRepository.find(Twitter, accessToken.token, accessToken.secret).map{registeredToken =>
-      Some(registeredToken.user)
-    }.getOrElse {
-      val socialUser = Twitter.socialUser(Token(accessToken.token, accessToken.secret))
-      UserRepository.insertAsSocialUser(socialUser, accessToken.token, accessToken.secret) match {
-        case Right((user, token)) => Some(user)
-        case Left(_) => None
-      }
+    AccessTokenRepository.find(Twitter, accessToken.token, accessToken.secret) match {
+      case Some(registeredToken) => registeredToken.user
+      case None =>
+        val socialUser = Twitter.socialUser(Token(accessToken.token, accessToken.secret))
+        UserRepository.insertAsSocialUser(socialUser, accessToken.token, accessToken.secret) match {
+          case Right((user, token)) => Some(user)
+          case Left(_) => None
+        }
     }
   }
 }

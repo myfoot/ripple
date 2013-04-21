@@ -28,10 +28,10 @@ class UserRepositorySpec extends ModelSpecBase {
       }
     }
     ".insert" >> {
-      "追加可能な場合はRight" >> {
+      "追加可能な場合はRight" >> new WithTransaction {
         UserRepository.insert(validUser) must beRight(validUser)
       }
-      "追加不可能な場合はLeft" >> {
+      "追加不可能な場合はLeft" >> new WithTransaction {
         UserRepository.insert(invalidUser) must beLeft
       }
     }

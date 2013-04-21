@@ -31,7 +31,7 @@ class AccessTokenSpec extends ModelSpecBase {
   }
   "#user" should {
     "RequestTokenの保持ユーザーが取得できる" >> new withTestData {
-      requestToken.user must equalTo(user)
+      requestToken.user must beSome(user)
     }
   }
 
