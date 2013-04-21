@@ -1,9 +1,12 @@
 package models.social
 
+import com.typesafe.config.ConfigFactory
+import java.io.File
+
 
 trait ProviderConfig {
-  private lazy val conf = play.Play.application.configuration
-  private lazy val socialConfKey = "social"
+  val conf = ConfigFactory.load(ConfigFactory.parseFileAnySyntax(new File("conf/social.conf")))
+  val socialConfKey = "social"
   lazy val requestTokenUrl: String = conf.getString("%s.%s.requestTokenUrl".format(socialConfKey, provider.name))
   lazy val accessTokenUrl: String = conf.getString("%s.%s.accessTokenUrl".format(socialConfKey, provider.name))
   lazy val authorizationUrl: String = conf.getString("%s.%s.authorizationUrl".format(socialConfKey, provider.name))
