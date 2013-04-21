@@ -4,6 +4,8 @@ import models.user.{Administrator, User}
 import models.{WithPlayContext, ModelSpecBase}
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
+import models.music.Music
+import java.io.File
 
 class ChatRoomSpec extends ModelSpecBase {
   lazy val user = User("hoge", "hoge@foo.com", "pass", Administrator)
@@ -46,6 +48,19 @@ class ChatRoomSpec extends ModelSpecBase {
       "同じ名前の部屋が存在しない場合は作成可能" >> new WithPlayContext with ValidationTest[ChatRoom] {
         val target = ChatRoom("test_room2")
         expectSuccess()
+      }
+    }
+  }
+  "#musicsWithoutRawData" >> {
+    val mp3TestDataName = "test-data.mp3"
+    val mp3TestDataPath = s"test/data/$mp3TestDataName"
+    "自身に紐づく音楽データを取得する（生データは含まない）" >> new withTestData {
+      inTransaction {
+        val music = Music(new File(mp3TestDataPath))
+        chatRoom.musics.associate(music)
+        val actual = chatRoom.musicsWithoutRawData
+        actual.length must be_==(1)
+        actual.head must be_==(music.id, music.name, music.artistName, music.albumName, music.songTitle)
       }
     }
   }
