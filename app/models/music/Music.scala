@@ -1,6 +1,6 @@
 package models.music
 
-import models.{CoreSchema, BaseEntity}
+import models.BaseEntity
 import java.io.{FileInputStream => Fin, File}
 
 import resource._
@@ -8,8 +8,6 @@ import models.util.{ValidatorTypes, Validator}
 import models.util.Validations._
 import util.string.StringExtension._
 import org.squeryl.annotations.Column
-import org.jaudiotagger.audio.AudioFileIO
-import org.jaudiotagger.tag.FieldKey
 import models.util.audio.{AudioReadException, AudioReader}
 
 class Music(val name: String,
