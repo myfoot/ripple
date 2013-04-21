@@ -27,7 +27,7 @@ case class AccessToken(
   )
 
   // headOptionするとCoreSchemaがNoClassDefFoundで実行時にエラーになる為、singleにしておく
-  lazy val user : User = transaction{CoreSchema.userToRequestToken.right(this).single}
+  lazy val user : User = inTransaction{CoreSchema.userToRequestToken.right(this).single}
 }
 
 object AccessToken {

@@ -7,7 +7,7 @@ import org.squeryl.adapters.H2Adapter
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
 import scala.Some
-import org.specs2.execute.Result
+import org.specs2.execute.{AsResult, Result}
 
 class ModelSpecBase extends Specification with Mockito with Before {
   def before = initialDB
@@ -25,6 +25,19 @@ class ModelSpecBase extends Specification with Mockito with Before {
        create
        //printDdl
      }
+  }
+
+  trait WithTransaction extends Around {
+    def before = {}
+    def after = {}
+    def around[T](t: => T)(implicit evidence$1: AsResult[T]): Result = AsResult {
+      transaction {
+        before
+        val result = t
+        after
+        result
+      }
+    }
   }
 
   def verifyRequiredText[A <: BaseEntity](f: String => A) = {
@@ -56,11 +69,7 @@ class ModelSpecBase extends Specification with Mockito with Before {
     }
   }
 
-  trait ValidationTest[A <: BaseEntity] extends BeforeAfter {
-    def before = {}
-    def after = {
-
-    }
+  trait ValidationTest[A <: BaseEntity] extends WithTransaction {
     val target: A
 
     def expectFailed(expect: Option[Error] = None): Result = {

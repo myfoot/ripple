@@ -28,21 +28,17 @@ class AccessTokenRepositorySpec extends ModelSpecBase {
     }
   }
 
-  trait withSampleData extends BeforeAfter {
+  trait withSampleData extends WithTransaction {
     lazy val user = User("name","emal","pass", Administrator)
     lazy val token = AccessToken(Twitter, "hoge", "foo", user.id)
 
-    def before = {
-      transaction {
-        user.save
-        token.save
-      }
+    override def before = {
+      user.save
+      token.save
     }
-    def after = {
-      transaction {
-        accessTokens.deleteWhere(u => u.id <> 0)
-        users.deleteWhere(u => u.id === user.id)
-      }
+    override def after = {
+      accessTokens.deleteWhere(u => u.id <> 0)
+      users.deleteWhere(u => u.id === user.id)
     }
   }
 

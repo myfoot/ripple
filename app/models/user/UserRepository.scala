@@ -21,7 +21,7 @@ object UserRepository {
   def insert(user:User) = {
     user.validate match {
       case result@Right(_) => {
-        transaction{ CoreSchema.users.insert(user) }
+        inTransaction{ CoreSchema.users.insert(user) }
         result
       }
       case x => x
@@ -30,7 +30,7 @@ object UserRepository {
 
   def insertAsSocialUser(socialUser: SocialUser, token: String, secret: String): Either[Error, (User, AccessToken)] = {
     try {
-      transaction {
+      inTransaction {
         insert(User(socialUser.name, "", "default-password", LoggedInUser)) match {
           case Right(user) => {
             AccessTokenRepository.insert(AccessToken(socialUser.provider, token, secret, user.id)) match {

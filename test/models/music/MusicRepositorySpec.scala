@@ -20,6 +20,7 @@ class MusicRepositorySpec extends ModelSpecBase {
   val testdata = "test/data/test-data.mp3"
   lazy val validMusic = Music(new File(testdata))
   lazy val invalidMusic = new Music("", Array.emptyByteArray)
+
   "MusicRepository" should {
     ".insert" >> {
       "追加可能な場合はRightオブジェクトが取得できる" >> new withData {
@@ -31,17 +32,15 @@ class MusicRepositorySpec extends ModelSpecBase {
     }
   }
 
-  trait withData extends BeforeAfter {
+  trait withData extends WithTransaction {
     var chatRoom = ChatRoom("aaa")
 
-    def before = {
+    override def before = {
       chatRoom.save
     }
-    def after = {
-      inTransaction {
-        musics.foreach{music => musics.deleteWhere(m => m.id === music.id) }
-        chatRooms.deleteWhere(c => c.id === chatRoom.id)
-      }
+    override def after = {
+      musics.foreach{music => musics.deleteWhere(m => m.id === music.id) }
+      chatRooms.deleteWhere(c => c.id === chatRoom.id)
     }
   }
 }

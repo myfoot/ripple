@@ -1,6 +1,6 @@
 package models.user
 
-import org.specs2.mutable.{Before, Specification}
+import org.specs2.mutable.Specification
 
 /**
  * Created with IntelliJ IDEA.

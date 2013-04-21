@@ -66,21 +66,17 @@ class ChatRoomSpec extends ModelSpecBase {
     }
   }
 
-  trait withTestData extends BeforeAfter {
+  trait withTestData extends WithTransaction {
     lazy val chatRoom = ChatRoom("test_room")
 
-    def before = {
-      transaction {
-        chatRoom.save
-      }
+    override def before = {
+      chatRoom.save
     }
 
-    def after = {
-      transaction {
-        chatRooms.toList.foreach{c =>
-          c.musics.deleteAll
-          chatRooms.deleteWhere(c2 => c2.id === c.id)
-        }
+    override def after = {
+      chatRooms.toList.foreach{c =>
+        c.musics.deleteAll
+        chatRooms.deleteWhere(c2 => c2.id === c.id)
       }
     }
   }
@@ -89,15 +85,11 @@ class ChatRoomSpec extends ModelSpecBase {
     lazy val chatRoom = ChatRoom("test_room")
 
     override def before = {
-      transaction {
-        chatRoom.save
-      }
+      chatRoom.save
     }
 
     override def after = {
-      transaction {
-        chatRooms.toList.foreach(c => chatRooms.deleteWhere(c2 => c2.id === c.id))
-      }
+      chatRooms.toList.foreach(c => chatRooms.deleteWhere(c2 => c2.id === c.id))
     }
   }
 

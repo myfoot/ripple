@@ -61,19 +61,15 @@ class UserRepositorySpec extends ModelSpecBase {
   lazy val validUser = User("name", "email", "pass", Administrator)
   lazy val invalidUser = User("", "", "pass", Administrator)
 
-  trait sampleUser extends BeforeAfter {
+  trait sampleUser extends WithTransaction {
     val user = User("hoge", "foo", "bar", Administrator)
 
-    def before = {
-      transaction {
-        user.save
-      }
+    override def before = {
+      user.save
     }
 
-    def after = {
-      transaction {
-        users.deleteWhere(u => u.id === user.id)
-      }
+    override def after = {
+      users.deleteWhere(u => u.id === user.id)
     }
   }
 }
