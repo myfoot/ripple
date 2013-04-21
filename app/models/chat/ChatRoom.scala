@@ -7,6 +7,8 @@ import util.string.StringExtension._
 import models.util.Validator
 import models.util.Validations._
 import models.util.ValidatorComposite._
+import models.music.Music
+import org.squeryl.PrimitiveTypeMode._
 
 class ChatRoom(val name:String) extends BaseEntity{
   type ModelClass = this.type
@@ -20,6 +22,12 @@ class ChatRoom(val name:String) extends BaseEntity{
   )
 
   def musics = CoreSchema.chatRoomToMusic.left(this)
+  def musicsWithoutRawData: Seq[(Long, String, String, String, String)] = {
+    from(musics) { m =>
+      where(m.chatRoomId === this.id)
+      select(m.id, m.name, m.artistName, m.albumName, m.songTitle)
+    }.toList
+  }
 
   def join(user:User):Boolean = updateMembers({_ contains user}, {_ += user})
   def leave(user:User):Boolean = updateMembers({x => !(x contains user)}, {_ -= user})
