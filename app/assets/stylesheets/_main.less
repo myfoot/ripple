@@ -1,0 +1,112 @@
+.container {
+  width: 820px;
+
+  > footer p {
+    text-align: center;
+  }
+
+  .content {
+    background-color:#FFF;
+    padding: 20px;
+    margin: 0 -20px;
+    .border-radius(0, 6px);
+    .shadow;
+
+    ul, ol, pre {
+      margin-bottom: 0px;
+    }
+
+    .span10, .span8, .span2 {
+      min-height: 500px;
+    }
+
+    .span2, .span4 {
+      padding-left: 9px;
+      margin-left: 10px;
+      border-left: 1px solid #eee;
+    }
+
+    .page-header {
+      background-color: #f5f5f5;
+      padding: 20px 20px 10px;
+      margin: -20px -20px 20px;
+    }
+
+    #username {
+      width: 200px;
+    }
+
+    #onError, #onChat {
+      display: none;
+
+      #main {
+        position: relative;
+        overflow: hidden;
+
+        #messages {
+          position: absolute;
+          bottom: 60px;
+          margin-bottom: 10px;
+          top: 0;
+          width: 100%;
+          overflow:auto;
+
+          .message {
+            padding: 4px 0;
+            border-bottom: 1px solid #eee;
+            position: relative;
+
+            .quit {
+              background: #D9E7FB;
+            }
+
+            span {
+              width: 70px;
+              overflow: hidden;
+              text-align: right;
+              font-weight: bold;
+              margin-right: 5px;
+              display: inline-block;
+              vertical-align: top;
+              position: relative;
+              top: -1px;
+            }
+
+            p {
+              display: inline-block;
+              margin: 0;
+              width: 500px;
+            }
+          }
+
+          .me {
+            background: #FFC;
+          }
+          .join {
+            background: #D9E7FB;
+          }
+        }
+      }
+
+      #talk {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 50%;
+        height: 40px;
+        margin-top: 5px;
+      }
+    }
+    .create-room {
+      .display-box;
+      height: 5%;
+
+      #name {
+        height: 25px;
+        margin-bottom :0;
+        margin-right: 10px;
+      }
+    }
+  }
+}
