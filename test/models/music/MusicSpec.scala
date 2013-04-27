@@ -1,10 +1,11 @@
 package models.music
 
-import models.{WithPlayContext, ModelSpecBase}
+import models.{ModelSpecBase}
 import java.io.{FileInputStream, InputStream, File}
 import models.chat.ChatRoom
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
+import org.specs2.mutable.{Before, BeforeAfter, After}
 
 class MusicSpec extends ModelSpecBase {
   val mp3TestDataName = "test-data.mp3"
@@ -50,17 +51,15 @@ class MusicSpec extends ModelSpecBase {
         }
       }
       "rawData" >> {
-        "空データでは登録できない" >> new WithPlayContext with ValidationTest[Music] {
+        "空データでは登録できない" >> new ValidationTest[Music] {
           val target: Music = new Music("hoge", Array.emptyByteArray)
           expectFailed()
         }
       }
     }
     "relations" >> {
-      "chatroomに紐づけて登録することができる" >>  new WithPlayContext {
+      "chatroomに紐づけて登録することができる" >> new withData {
         transaction {
-          val chat = ChatRoom("hoge")
-          val music = Music(new File(mp3TestDataPath))
           chat.musics.associate(music).chatRoomId must_== chat.id
           music.isPersisted must beTrue
         }
@@ -79,6 +78,20 @@ class MusicSpec extends ModelSpecBase {
       f(in)
     } finally {
       in.close
+    }
+  }
+
+  trait withData extends BeforeAfter {
+    val chat = ChatRoom("hoge")
+    val music = Music(new File(mp3TestDataPath))
+
+    def before = transaction {
+      chat.save
+    }
+
+    def after = transaction{
+      musics.deleteWhere(m => m.id <> 0)
+      chatRooms.deleteWhere(c => c.id <> 0)
     }
   }
 

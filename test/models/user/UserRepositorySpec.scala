@@ -3,9 +3,10 @@ package models.user
 import org.squeryl._
 import PrimitiveTypeMode._
 import models.CoreSchema._
-import models.{WithPlayContext, ModelSpecBase}
+import models.ModelSpecBase
 import models.social.twitter.Twitter
 import models.social.SocialUser
+import org.specs2.mutable.BeforeAfter
 
 class UserRepositorySpec extends ModelSpecBase {
   "UserRepository" should {
@@ -27,15 +28,15 @@ class UserRepositorySpec extends ModelSpecBase {
       }
     }
     ".insert" >> {
-      "追加可能な場合はRight" >> new WithPlayContext {
+      "追加可能な場合はRight" >> {
         UserRepository.insert(validUser) must beRight(validUser)
       }
-      "追加不可能な場合はLeft" >> new WithPlayContext {
+      "追加不可能な場合はLeft" >> {
         UserRepository.insert(invalidUser) must beLeft
       }
     }
     ".insertAsSocialUser" >> {
-      "登録可能な場合はUserとAccessTokenを登録する" >> new WithPlayContext {
+      "登録可能な場合はUserとAccessTokenを登録する" >> {
         val name = "hoge"
         val token = "aaaaaaaa"
         val secret = "bbbbbbbb"
@@ -60,16 +61,16 @@ class UserRepositorySpec extends ModelSpecBase {
   lazy val validUser = User("name", "email", "pass", Administrator)
   lazy val invalidUser = User("", "", "pass", Administrator)
 
-  trait sampleUser extends WithPlayContext {
+  trait sampleUser extends BeforeAfter {
     val user = User("hoge", "foo", "bar", Administrator)
 
-    override def before = {
+    def before = {
       transaction {
         user.save
       }
     }
 
-    override def after = {
+    def after = {
       transaction {
         users.deleteWhere(u => u.id === user.id)
       }

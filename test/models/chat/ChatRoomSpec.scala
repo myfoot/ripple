@@ -1,11 +1,12 @@
 package models.chat
 
 import models.user.{Administrator, User}
-import models.{WithPlayContext, ModelSpecBase}
+import models.{ModelSpecBase}
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
 import models.music.Music
 import java.io.File
+import org.specs2.mutable.BeforeAfter
 
 class ChatRoomSpec extends ModelSpecBase {
   lazy val user = User("hoge", "hoge@foo.com", "pass", Administrator)
@@ -41,11 +42,11 @@ class ChatRoomSpec extends ModelSpecBase {
       "名前が空白のみの場合は作成できない" >> {
         verifyRequiredText(ChatRoom(_))
       }
-      "同じ名前の部屋は作成できない" >> new withTestData with ValidationTest[ChatRoom]{
+      "同じ名前の部屋は作成できない" >> new validationTestWithTestData {
         val target: ChatRoom = ChatRoom("")
         expectFailed()
       }
-      "同じ名前の部屋が存在しない場合は作成可能" >> new WithPlayContext with ValidationTest[ChatRoom] {
+      "同じ名前の部屋が存在しない場合は作成可能" >> new ValidationTest[ChatRoom] {
         val target = ChatRoom("test_room2")
         expectSuccess()
       }
@@ -65,7 +66,26 @@ class ChatRoomSpec extends ModelSpecBase {
     }
   }
 
-  trait withTestData extends WithPlayContext {
+  trait withTestData extends BeforeAfter {
+    lazy val chatRoom = ChatRoom("test_room")
+
+    def before = {
+      transaction {
+        chatRoom.save
+      }
+    }
+
+    def after = {
+      transaction {
+        chatRooms.toList.foreach{c =>
+          c.musics.deleteAll
+          chatRooms.deleteWhere(c2 => c2.id === c.id)
+        }
+      }
+    }
+  }
+
+  trait validationTestWithTestData extends ValidationTest[ChatRoom] {
     lazy val chatRoom = ChatRoom("test_room")
 
     override def before = {

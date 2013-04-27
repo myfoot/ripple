@@ -1,8 +1,9 @@
 package models.chat
 
-import models.{WithPlayContext, ModelSpecBase}
+import models.{ModelSpecBase}
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
+import org.specs2.mutable.BeforeAfter
 
 /**
  * Created with IntelliJ IDEA.
@@ -66,17 +67,17 @@ class ChatRoomRepositorySpec extends ModelSpecBase {
     }
   }
 
-  trait withTestData extends WithPlayContext {
+  trait withTestData extends BeforeAfter {
     lazy val chatRoom = ChatRoom("test_room")
     lazy val chatRoom2 = ChatRoom("test_room2")
-    override def before = {
+    def before = {
       transaction {
         chatRoom.save
         chatRoom2.save
       }
     }
 
-    override def after = {
+    def after = {
       transaction {
         chatRooms.toList.foreach(c => chatRooms.deleteWhere(c2 => c2.id === c.id))
       }
