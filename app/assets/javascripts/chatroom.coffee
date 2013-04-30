@@ -7,33 +7,34 @@ class ChatRoom
     jsRoutes.controllers.ChatRoomsController.create().ajax({
       dataType: 'json',
       data: {'name': name},
-      success: (data) =>
-        if (data.success)
-          jsRoutes.controllers.ChatRoomsController.index().ajax({
-            dataType: "json",
-            success: (data) =>
-              list = $('#' + @options.list)
-              list.html('')
-              $.each(data, (index, element) =>
-                li = $('<li>')
-                link = $('<a>')
-                li.append(link)
-                link.attr('tabindex', index)
-                link.attr('href', @options.show_url + element.id)
-                link.append(element.name)
-                list.append(li)
-              )
-          })
-        else
-          errors = $('#' + @options.errors)
-          errors.html('')
-          errorsUl = errors.append($('<ul>'))
-          $.each(data.messages.name, (index, message) ->
-            errorsUl.append($('<li>').append(message))
+    }).done( (createResult) =>
+      # success以外の場合はエラーにすべき
+      if (createResult.success)
+        jsRoutes.controllers.ChatRoomsController.index().ajax({
+          dataType: "json",
+        }).done( (chatRoomList) =>
+          list = $('#' + @options.list)
+          list.html('')
+          $.each(chatRoomList, (index, element) =>
+            li = $('<li>')
+            link = $('<a>')
+            li.append(link)
+            link.attr('tabindex', index)
+            link.attr('href', @options.show_url + element.id)
+            link.append(element.name)
+            list.append(li)
           )
-      error: (data) ->
-        alert(data)
-    })
+        )
+      else
+        errors = $('#' + @options.errors)
+        errors.html('')
+        errorsUl = errors.append($('<ul>'))
+        $.each(createResult.messages.name, (index, message) ->
+          errorsUl.append($('<li>').append(message))
+        )
+    ).fail( (data) ->
+      alert(data)
+    )
 
 root = exports ? this
 root.ChatRoomActions = {
@@ -44,7 +45,7 @@ root.ChatRoomActions = {
 
   bindAjaxFilePost: (id) ->
     $form = $("##{id}")
-    $form.submit(=>
+    $form.submit( =>
       fd = new FormData($form[0])
       $.ajax($form.attr("action"), {
         type: 'post',
@@ -52,14 +53,14 @@ root.ChatRoomActions = {
         contentType: false,
         data: fd,
         dataType: 'html',
-        success: (data) ->
-          console.log(data)
-        error: (xhr, status, error) ->
-          console.log("error");
-          console.log(xhr.responseText);
-          console.log(status);
-          console.log(error);
-      })
+      }).done( (data) ->
+        console.log(data)
+      ).fail( (xhr, status, error) ->
+        console.log("error")
+        console.log(xhr.responseText)
+        console.log(status)
+        console.log(error)
+      )
       false
     )
 
