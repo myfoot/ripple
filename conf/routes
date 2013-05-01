@@ -10,6 +10,7 @@ POST    /rooms                      controllers.ChatRoomsController.create
 #music
 GET     /musics                     controllers.MusicsController.index(chatRoomId:Long)
 POST    /musics                     controllers.MusicsController.create(chatRoomId:Long)
+GET     /musics/$id<[0-9]+>$format<.*>  controllers.MusicsController.show(id:Long, format: String)
 
 #login
 GET     /login                      controllers.SessionsController.index
