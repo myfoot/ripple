@@ -1,9 +1,8 @@
 package models.chat
 
-import models.{ModelSpecBase}
+import models.ModelSpecBase
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
-import org.specs2.mutable.BeforeAfter
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,27 +14,27 @@ import org.specs2.mutable.BeforeAfter
 class ChatRoomRepositorySpec extends ModelSpecBase {
   "ChatRoomRepository" should {
     "#find" >> {
-      "指定された名前の部屋が存在する場合はCharRoomオブジェクトを返す" >> new withTestData {
+      "指定された名前の部屋が存在する場合はCharRoomオブジェクトを返す" >> new WithTestData {
         ChatRoomRepository.find(chatRoom.name) must beSome(chatRoom)
       }
-      "指定された名前の部屋が存在しない場合は何も返さない" >> new withTestData {
+      "指定された名前の部屋が存在しない場合は何も返さない" >> new WithTestData {
         ChatRoomRepository.find("hogefoobar") must beNone
       }
     }
     "#find(id)" >> {
-      "指定したIDの部屋が存在する場合はSome(ChatRoom)が取得できる" >> new withTestData {
+      "指定したIDの部屋が存在する場合はSome(ChatRoom)が取得できる" >> new WithTestData {
         ChatRoomRepository.find(chatRoom.id) must beSome(chatRoom)
       }
-      "指定したIDの部屋が存在しない場合はNoneが返る" >> new withTestData {
+      "指定したIDの部屋が存在しない場合はNoneが返る" >> new WithTestData {
         ChatRoomRepository.find(-1) must beNone
       }
     }
 
     "#findOrCreate" >> {
-      "指定された名前の部屋が存在する場合はCharRoomオブジェクトを返す" >> new withTestData {
+      "指定された名前の部屋が存在する場合はCharRoomオブジェクトを返す" >> new WithTestData {
         ChatRoomRepository.findOrCreate(chatRoom.name) must equalTo(chatRoom)
       }
-      "指定された名前の部屋が存在しない場合は新規作成して返す" >> new withTestData {
+      "指定された名前の部屋が存在しない場合は新規作成して返す" >> new WithTestData {
         val name = "hogefoobar"
         val newRoom = ChatRoomRepository.findOrCreate(name)
         newRoom.name must equalTo(name)
@@ -44,7 +43,7 @@ class ChatRoomRepositorySpec extends ModelSpecBase {
     }
 
     "#create" >> {
-      "指定されたChatRoomオブジェクトが追加可能な場合はRightオブジェクトが取得できる" >> new withTestData {
+      "指定されたChatRoomオブジェクトが追加可能な場合はRightオブジェクトが取得できる" >> new WithTestData {
         // TODO: 本当はstub化したいが、mixinしたtraitのメソッドをstub化しようとすると、エラーになる。UninitializedFieldError: Uninitialized field: Schema.scala: 11 (Validations.scala:23)
 //        val mockChatRoom = mock[ChatRoom]
 //        mockChatRoom.validate returns true
@@ -52,7 +51,7 @@ class ChatRoomRepositorySpec extends ModelSpecBase {
         ChatRoomRepository.insert(mockChatRoom) must beRight(mockChatRoom)
         ChatRoomRepository.find(mockChatRoom.name) must beSome
       }
-      "指定されたChatRoomオブジェクトが追加不可能な場合はLeftオブジェクトが取得できる" >> new withTestData {
+      "指定されたChatRoomオブジェクトが追加不可能な場合はLeftオブジェクトが取得できる" >> new WithTestData {
         // TODO: stub化
         val mockChatRoom = ChatRoom(chatRoom.name)
         ChatRoomRepository.insert(mockChatRoom) must beLeft
@@ -61,13 +60,13 @@ class ChatRoomRepositorySpec extends ModelSpecBase {
     }
 
     "#all" >> {
-      "全ての部屋が取得できる" >> new withTestData {
+      "全ての部屋が取得できる" >> new WithTestData {
         ChatRoomRepository.all.size must equalTo(2)
       }
     }
   }
 
-  trait withTestData extends WithTransaction {
+  trait WithTestData extends WithTransaction {
     lazy val chatRoom = ChatRoom("test_room")
     lazy val chatRoom2 = ChatRoom("test_room2")
     override def before = {

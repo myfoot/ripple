@@ -6,24 +6,23 @@ import models.CoreSchema._
 import models.ModelSpecBase
 import models.social.twitter.Twitter
 import models.social.SocialUser
-import org.specs2.mutable.BeforeAfter
 
 class UserRepositorySpec extends ModelSpecBase {
   "UserRepository" should {
     ".find" >> {
-      "指定された名前＆パスワードのユーザーが存在する場合はUserオブジェクトを返す" >> new sampleUser {
+      "指定された名前＆パスワードのユーザーが存在する場合はUserオブジェクトを返す" >> new WithTestData {
         UserRepository.find(user.name, user.password) must beSome(user)
       }
-      "指定された名前＆パスワードのユーザーが存在しない場合は何も返さない" >> new sampleUser {
+      "指定された名前＆パスワードのユーザーが存在しない場合は何も返さない" >> new WithTestData {
         UserRepository.find("", "") must beNone
       }
     }
     ".findById" >> {
-      "指定された名前＆パスワードのユーザーが存在する場合はUserオブジェクトを返す" >> new sampleUser {
+      "指定された名前＆パスワードのユーザーが存在する場合はUserオブジェクトを返す" >> new WithTestData {
         println(UserRepository.findById(user.id).map(_.role))
         UserRepository.findById(user.id) must beSome(user)
       }
-      "指定された名前＆パスワードのユーザーが存在しない場合は何も返さない" >> new sampleUser {
+      "指定された名前＆パスワードのユーザーが存在しない場合は何も返さない" >> new WithTestData {
         UserRepository.findById(user.id+1) must beNone
       }
     }
@@ -61,7 +60,7 @@ class UserRepositorySpec extends ModelSpecBase {
   lazy val validUser = User("name", "email", "pass", Administrator)
   lazy val invalidUser = User("", "", "pass", Administrator)
 
-  trait sampleUser extends WithTransaction {
+  trait WithTestData extends WithTransaction {
     val user = User("hoge", "foo", "bar", Administrator)
 
     override def before = {

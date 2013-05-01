@@ -1,12 +1,11 @@
 package models.music
 
-import models.{ModelSpecBase}
+import models.ModelSpecBase
 import models.util.RequireTextValidator
 import models.chat.ChatRoom
 import models.CoreSchema._
 import java.io.File
 import org.squeryl.PrimitiveTypeMode._
-import org.specs2.mutable.BeforeAfter
 
 
 /**
@@ -23,16 +22,16 @@ class MusicRepositorySpec extends ModelSpecBase {
 
   "MusicRepository" should {
     ".insert" >> {
-      "追加可能な場合はRightオブジェクトが取得できる" >> new withData {
+      "追加可能な場合はRightオブジェクトが取得できる" >> new WithData {
         MusicRepository.insert(chatRoom, validMusic) must beRight(validMusic)
       }
-      "追加不可能な場合はLeftオブジェクトが取得できる" >> new withData {
+      "追加不可能な場合はLeftオブジェクトが取得できる" >> new WithData {
         MusicRepository.insert(chatRoom, invalidMusic) must beLeft(Map('name -> List(RequireTextValidator.KEY), 'rawData -> List('empty)))
       }
     }
   }
 
-  trait withData extends WithTransaction {
+  trait WithData extends WithTransaction {
     var chatRoom = ChatRoom("aaa")
 
     override def before = {
