@@ -18,6 +18,7 @@ object ApplicationBuild extends Build {
     "com.jsuereth" %% "scala-arm" % "1.3",
     "com.twitter" % "util-eval" % "6.1.0" withSources(),
     "org" % "jaudiotagger" % "2.0.3" withSources(),
+    "com.typesafe" % "config" % "1.0.0",
     "org.mockito" % "mockito-all" % "1.9.0" % "test"
   )
 

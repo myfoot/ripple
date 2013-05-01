@@ -1,11 +1,12 @@
 package models.music
 
-import models.{WithPlayContext, ModelSpecBase}
+import models.{ModelSpecBase}
 import models.util.RequireTextValidator
 import models.chat.ChatRoom
 import models.CoreSchema._
 import java.io.File
 import org.squeryl.PrimitiveTypeMode._
+import org.specs2.mutable.BeforeAfter
 
 
 /**
@@ -30,11 +31,17 @@ class MusicRepositorySpec extends ModelSpecBase {
     }
   }
 
-  trait withData extends WithPlayContext {
+  trait withData extends BeforeAfter {
     var chatRoom = ChatRoom("aaa")
 
-    override def before {
+    def before = {
       chatRoom.save
+    }
+    def after = {
+      inTransaction {
+        musics.foreach{music => musics.deleteWhere(m => m.id === music.id) }
+        chatRooms.deleteWhere(c => c.id === chatRoom.id)
+      }
     }
   }
 }

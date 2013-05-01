@@ -1,14 +1,12 @@
 package models.user
 
-import models.{WithPlayContext, ModelSpecBase}
-import org.specs2.mutable.BeforeAfter
+import models.ModelSpecBase
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
 import models.social.twitter.Twitter
 import models.social.facebook.Facebook
 import models.social.Unknown
-import org.codehaus.jackson.map.`type`.TypeFactory
-import org.specs2.execute.{Result, AsResult}
+import org.specs2.mutable.BeforeAfter
 
 class AccessTokenRepositorySpec extends ModelSpecBase {
   ".find" should {
@@ -30,17 +28,17 @@ class AccessTokenRepositorySpec extends ModelSpecBase {
     }
   }
 
-  trait withSampleData extends WithPlayContext {
+  trait withSampleData extends BeforeAfter {
     lazy val user = User("name","emal","pass", Administrator)
     lazy val token = AccessToken(Twitter, "hoge", "foo", user.id)
 
-    override def before = {
+    def before = {
       transaction {
         user.save
         token.save
       }
     }
-    override def after = {
+    def after = {
       transaction {
         accessTokens.deleteWhere(u => u.id <> 0)
         users.deleteWhere(u => u.id === user.id)

@@ -2,46 +2,74 @@ package models
 
 import org.specs2.mutable._
 import org.specs2.mock._
+import org.squeryl.{Session, SessionFactory}
+import org.squeryl.adapters.H2Adapter
+import org.squeryl.PrimitiveTypeMode._
+import models.CoreSchema._
+import scala.Some
+import org.specs2.execute.Result
 
-class ModelSpecBase extends Specification with Mockito {
+class ModelSpecBase extends Specification with Mockito with Before {
+  def before = initialDB
+
+  private def initialDB = {
+     println("Setting up data.")
+     Class.forName("org.h2.Driver")
+     SessionFactory.concreteFactory = Some(() =>
+       Session.create(
+         java.sql.DriverManager.getConnection("jdbc:h2:test/example", "sa", ""),
+         new H2Adapter)
+     )
+     transaction {
+       drop
+       create
+       //printDdl
+     }
+  }
 
   def verifyRequiredText[A <: BaseEntity](f: String => A) = {
     new RequiredTextTests[A] {
       def model(value: String): A = f(value)
     }.define
   }
+
   private trait RequiredTextTests[A <: BaseEntity] {
     def model(value:String): A
 
     def define = {
-      "空文字は不可" >> new WithPlayContext with ValidationTest[A] {
+      "空文字は不可" >> new ValidationTest[A] {
         val target: A = model("")
         expectFailed()
       }
-      "半角スペースのみは不可" >> new WithPlayContext with ValidationTest[A] {
+      "半角スペースのみは不可" >> new ValidationTest[A] {
         val target: A = model(" ")
         expectFailed()
       }
-      "全角スペースのみは不可" >> new WithPlayContext with ValidationTest[A] {
+      "全角スペースのみは不可" >> new ValidationTest[A] {
         val target: A = model("　")
         expectFailed()
       }
-      "半角スペース&全角スペースのみは不可" >> new WithPlayContext with ValidationTest[A] {
+      "半角スペース&全角スペースのみは不可" >> new ValidationTest[A] {
         val target: A = model(" 　　 ")
         expectFailed()
       }
     }
   }
 
-  trait ValidationTest[A <: BaseEntity] {
+  trait ValidationTest[A <: BaseEntity] extends BeforeAfter {
+    def before = {}
+    def after = {
+
+    }
     val target: A
 
-    def expectFailed(expect: Option[Error] = None) = {
-      expect
-        .map{ error => target.validate must beLeft(error)}
-        .getOrElse{ target.validate must beLeft }
+    def expectFailed(expect: Option[Error] = None): Result = {
+      expect match {
+        case Some(x) => target.validate must beLeft(x)
+        case None => target.validate must beLeft
+      }
     }
-    def expectSuccess(expect: A = target) = {
+    def expectSuccess(expect: A = target): Result = {
       target.validate must beRight(expect)
     }
   }
