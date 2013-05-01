@@ -1,8 +1,6 @@
 class ChatRoom
-  constructor: (options) ->
+  create: (options) =>
     @options = options
-
-  create: =>
     name = $('#' + @options.name).val()
     jsRoutes.controllers.ChatRoomsController.create().ajax({
       dataType: 'json',
@@ -35,11 +33,33 @@ class ChatRoom
         alert(data)
     })
 
+  musics: (chatRoomId, tableId) =>
+    jsRoutes.controllers.MusicsController.index(chatRoomId).ajax({
+      dataType: "json"
+    }).done( (data) =>
+      $table = $("##{tableId}")
+      console.log data.musics
+      $.each(data.musics, (index, music) =>
+        $tr = $("<tr data-id=\"#{music.id}\"></tr>")
+        $artist = $("<td>#{music.artistName}</td>")
+        $album = $("<td>#{music.albumName}</td>")
+        $songTitle = $("<td>#{music.songTitle}</td>")
+        $table.append(
+          $tr
+            .append($artist)
+            .append($album)
+            .append($songTitle)
+        )
+      )
+    ).fail( (data) ->
+      alert("音楽一覧が取得できませんでした")
+    )
+
 root = exports ? this
 root.ChatRoomActions = {
   bindCreate: (options) ->
     $('#' + options.button).click(->
-      new ChatRoom(options).create()
+      new ChatRoom().create(options)
     )
 
   bindAjaxFilePost: (id) ->
@@ -62,5 +82,8 @@ root.ChatRoomActions = {
       })
       false
     )
+
+  showMusics: (chatRoomId, tableId) ->
+    new ChatRoom().musics(chatRoomId, tableId)
 
 }
