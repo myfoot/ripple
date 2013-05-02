@@ -1,67 +1,60 @@
 class ChatRoom
-  create: (options) =>
-    @options = options
-    name = $('#' + @options.name).val()
+  @create: (name, sucessHandler, failedHandler) ->
     jsRoutes.controllers.ChatRoomsController.create().ajax({
       dataType: 'json',
       data: {'name': name},
-    }).done( (createResult) =>
+    }).done( (createResult) ->
       # success以外の場合はエラーにすべき
-      if (createResult.success)
-        jsRoutes.controllers.ChatRoomsController.index().ajax({
-          dataType: "json",
-        }).done( (chatRoomList) =>
-          list = $('#' + @options.list)
-          list.html('')
-          $.each(chatRoomList, (index, element) =>
-            li = $('<li>')
-            link = $('<a>')
-            li.append(link)
-            link.attr('tabindex', index)
-            link.attr('href', @options.show_url + element.id)
-            link.append(element.name)
-            list.append(li)
-          )
-        )
-      else
-        errors = $('#' + @options.errors)
-        errors.html('')
-        errorsUl = errors.append($('<ul>'))
-        $.each(createResult.messages.name, (index, message) ->
-          errorsUl.append($('<li>').append(message))
-        )
+      sucessHandler(createResult)
     ).fail( (data) ->
       alert(data)
+      failedHandler(data)
     )
 
-  musics: (chatRoomId, tableId) =>
-    jsRoutes.controllers.MusicsController.index(chatRoomId).ajax({
+  @all: (successHandler) ->
+    jsRoutes.controllers.ChatRoomsController.index().ajax({
+        dataType: "json",
+    }).done( (chatRoomList) ->
+      successHandler(chatRoomList)
+    )
+
+  constructor: (chatRoomId) ->
+    @id = chatRoomId
+
+  musics: (successHandler, failedHandler) =>
+    jsRoutes.controllers.MusicsController.index(@id).ajax({
       dataType: "json"
-    }).done( (data) =>
-      $table = $("##{tableId}")
-      console.log data.musics
-      $.each(data.musics, (index, music) =>
-        $tr = $("<tr data-id=\"#{music.id}\"></tr>")
-        $artist = $("<td>#{music.artistName}</td>")
-        $album = $("<td>#{music.albumName}</td>")
-        $songTitle = $("<td>#{music.songTitle}</td>")
-        $table.append(
-          $tr
-            .append($artist)
-            .append($album)
-            .append($songTitle)
-        )
-      )
+    }).done( (data) ->
+      successHandler(data.musics)
     ).fail( (data) ->
-      alert("音楽一覧が取得できませんでした")
+      failedHandler(data)
     )
 
 root = exports ? this
 root.ChatRoomActions = {
   bindCreate: (options) ->
-    $('#' + options.button).click(->
-      new ChatRoom().create(options)
-    )
+    $('#' + options.button).click ->
+      name = $('#' + options.name).val()
+      ChatRoom.create name, (createResult) ->
+        if createResult.success
+          ChatRoom.all((chatRooms) ->
+            list = $('#' + options.list)
+            list.html('')
+            $.each chatRooms, (index, element) ->
+              li = $('<li>')
+              link = $('<a>')
+              li.append(link)
+              link.attr('tabindex', index)
+              link.attr('href', options.show_url + element.id)
+              link.append(element.name)
+              list.append(li)
+          )
+        else
+          errors = $('#' + options.errors)
+          errors.html('')
+          errorsUl = errors.append($('<ul>'))
+          $.each createResult.messages.name, (index, message) ->
+            errorsUl.append($('<li>').append(message))
 
   bindAjaxFilePost: (id) ->
     $form = $("##{id}")
@@ -85,6 +78,22 @@ root.ChatRoomActions = {
     )
 
   showMusics: (chatRoomId, tableId) ->
-    new ChatRoom().musics(chatRoomId, tableId)
+    new ChatRoom(chatRoomId).musics((musics) ->
+      $table = $("##{tableId}")
+      $.each musics, (index, music) ->
+        $tr = $("<tr data-id=\"#{music.id}\"></tr>")
+        $artist = $("<td>#{music.artistName}</td>")
+        $album = $("<td>#{music.albumName}</td>")
+        $songTitle = $("<td>#{music.songTitle}</td>")
+        $table.append(
+          $tr
+          .append($artist)
+          .append($album)
+          .append($songTitle)
+        )
+    , (data) ->
+      alert("音楽一覧を取得できませんでした")
+      # TODO: ErrorMessage
+    )
 
 }
