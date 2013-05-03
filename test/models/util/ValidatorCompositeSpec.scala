@@ -1,8 +1,7 @@
 package models.util
 
-import org.specs2.mutable.{Before, Specification}
+import org.specs2.mutable.Specification
 import org.specs2.mock.Mockito
-import org.specs2.specification.Scope
 
 class ValidatorCompositeSpec extends Specification with Mockito {
   "#validate" should {

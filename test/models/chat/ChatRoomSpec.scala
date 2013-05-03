@@ -1,12 +1,11 @@
 package models.chat
 
 import models.user.{Administrator, User}
-import models.{ModelSpecBase}
+import models.ModelSpecBase
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
 import models.music.Music
 import java.io.File
-import org.specs2.mutable.BeforeAfter
 
 class ChatRoomSpec extends ModelSpecBase {
   lazy val user = User("hoge", "hoge@foo.com", "pass", Administrator)
@@ -42,7 +41,7 @@ class ChatRoomSpec extends ModelSpecBase {
       "名前が空白のみの場合は作成できない" >> {
         verifyRequiredText(ChatRoom(_))
       }
-      "同じ名前の部屋は作成できない" >> new validationTestWithTestData {
+      "同じ名前の部屋は作成できない" >> new ValidationTestWithTestData {
         val target: ChatRoom = ChatRoom("")
         expectFailed()
       }
@@ -55,7 +54,7 @@ class ChatRoomSpec extends ModelSpecBase {
   "#musicsWithoutRawData" >> {
     val mp3TestDataName = "test-data.mp3"
     val mp3TestDataPath = s"test/data/$mp3TestDataName"
-    "自身に紐づく音楽データを取得する（生データは含まない）" >> new withTestData {
+    "自身に紐づく音楽データを取得する（生データは含まない）" >> new WithTestData {
       inTransaction {
         val music = Music(new File(mp3TestDataPath))
         chatRoom.musics.associate(music)
@@ -66,7 +65,7 @@ class ChatRoomSpec extends ModelSpecBase {
     }
   }
 
-  trait withTestData extends WithTransaction {
+  trait WithTestData extends WithTransaction {
     lazy val chatRoom = ChatRoom("test_room")
 
     override def before = {
@@ -81,7 +80,7 @@ class ChatRoomSpec extends ModelSpecBase {
     }
   }
 
-  trait validationTestWithTestData extends ValidationTest[ChatRoom] {
+  trait ValidationTestWithTestData extends ValidationTest[ChatRoom] {
     lazy val chatRoom = ChatRoom("test_room")
 
     override def before = {

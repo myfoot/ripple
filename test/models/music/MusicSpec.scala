@@ -1,11 +1,10 @@
 package models.music
 
-import models.{ModelSpecBase}
+import models.ModelSpecBase
 import java.io.{FileInputStream, InputStream, File}
 import models.chat.ChatRoom
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
-import org.specs2.mutable.{Before, BeforeAfter, After}
 
 class MusicSpec extends ModelSpecBase {
   val mp3TestDataName = "test-data.mp3"
@@ -58,7 +57,7 @@ class MusicSpec extends ModelSpecBase {
       }
     }
     "relations" >> {
-      "chatroomに紐づけて登録することができる" >> new withData {
+      "chatroomに紐づけて登録することができる" >> new WithData {
         chat.musics.associate(music).chatRoomId must_== chat.id
         music.isPersisted must beTrue
       }
@@ -79,7 +78,7 @@ class MusicSpec extends ModelSpecBase {
     }
   }
 
-  trait withData extends WithTransaction {
+  trait WithData extends WithTransaction {
     val chat = ChatRoom("hoge")
     val music = Music(new File(mp3TestDataPath))
 
