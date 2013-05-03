@@ -72,6 +72,11 @@ object MusicsController extends NeedAuthController {
     }
   }
 
+  def destroy(id: Long) = authorizedAction(LoggedInUser) { user => implicit request =>
+    if (MusicRepository.delete(id)) defaultResponseBuilder.success(Json.obj("message" -> "delete succesful"))
+    else defaultResponseBuilder.error("error.music.id.notExist")
+  }
+
   private def insertMusic[A](chatRoom: ChatRoom, file: FilePart[TemporaryFile], success: Music => SimpleResult[A], error: Error => SimpleResult[A]): SimpleResult[A]= {
     deleteAfter(File.createTempFile("tmp", file.filename)) { tmpFile =>
       file.ref.moveTo(tmpFile, true)
