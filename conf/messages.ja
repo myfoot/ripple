@@ -4,4 +4,5 @@ error.chatroom.id.notExist=ChatRoomが存在しません。
 
 error.music.file.invalidContentType=ファイル形式が不正です。
 error.music.file.required=ファイルを選択して送信してください。
+error.music.id.notExist=指定された曲は存在しません。
 error.music.invalid.parameter=送信されたデータが不正です。
