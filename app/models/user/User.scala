@@ -11,6 +11,7 @@ class User(val name: String,
            roleName: String) extends BaseEntity {
   type ModelClass = User
   def this() = this("", "", "", GuestUser.name)
+
   override lazy val validators: Map[Symbol, Validator] = Map(
     'name -> requiredText(name),
     'password -> requiredText(password)

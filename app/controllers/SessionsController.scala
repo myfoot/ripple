@@ -7,7 +7,7 @@ import play.api.data.Forms._
 import models.user._
 import jp.t2v.lab.play20.auth.LoginLogout
 
-object SessionsController extends Controller with LoginLogout with AuthConfigImpl {
+object SessionsController extends RippleController with LoginLogout with AuthConfigImpl {
 
   val loginForm = Form(
     mapping(
@@ -17,15 +17,15 @@ object SessionsController extends Controller with LoginLogout with AuthConfigImp
       .verifying ("Invalid user name or password", result => result.isDefined)
   )
 
-  def index = Action { implicit request =>
+  def index = withTransaction{ implicit request =>
     Ok(views.html.sessions.index(loginForm))
   }
 
-  def logout = Action {implicit request =>
+  def logout = withTransaction{implicit request =>
     gotoLogoutSucceeded
   }
 
-  def create = Action { implicit request =>
+  def create = withTransaction{ implicit request =>
     loginForm.bindFromRequest.fold(
       errors => BadRequest(views.html.sessions.index(errors)),
       user => gotoLoginSucceeded(user.get.id)

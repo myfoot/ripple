@@ -59,10 +59,8 @@ class MusicSpec extends ModelSpecBase {
     }
     "relations" >> {
       "chatroomに紐づけて登録することができる" >> new withData {
-        transaction {
-          chat.musics.associate(music).chatRoomId must_== chat.id
-          music.isPersisted must beTrue
-        }
+        chat.musics.associate(music).chatRoomId must_== chat.id
+        music.isPersisted must beTrue
       }
     }
   }
@@ -81,15 +79,15 @@ class MusicSpec extends ModelSpecBase {
     }
   }
 
-  trait withData extends BeforeAfter {
+  trait withData extends WithTransaction {
     val chat = ChatRoom("hoge")
     val music = Music(new File(mp3TestDataPath))
 
-    def before = transaction {
+    override def before = {
       chat.save
     }
 
-    def after = transaction{
+    override def after = {
       musics.deleteWhere(m => m.id <> 0)
       chatRooms.deleteWhere(c => c.id <> 0)
     }

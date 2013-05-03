@@ -31,26 +31,22 @@ class AccessTokenSpec extends ModelSpecBase {
   }
   "#user" should {
     "RequestTokenの保持ユーザーが取得できる" >> new withTestData {
-      requestToken.user must equalTo(user)
+      requestToken.user must beSome(user)
     }
   }
 
-  trait withTestData extends BeforeAfter {
+  trait withTestData extends WithTransaction {
     lazy val user = User("name","email", "pass", Administrator)
     lazy val requestToken = AccessToken(Twitter, "token", "secret", user.id)
 
-    def before = {
-      transaction {
-        user.save
-        requestToken.save
-      }
+    override def before = {
+      user.save
+      requestToken.save
     }
 
-    def after = {
-      transaction {
-        accessTokens.deleteWhere(r => r.id === requestToken.id)
-        users.deleteWhere(u => u.id === user.id)
-      }
+    override def after = {
+      accessTokens.deleteWhere(r => r.id === requestToken.id)
+      users.deleteWhere(u => u.id === user.id)
     }
   }
 

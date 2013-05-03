@@ -8,29 +8,25 @@ import models.util.ValidationTypes._
 import models.exception.ValidationError
 
 object UserRepository {
-  def find(name:String, password:String):Option[User] = inTransaction{
+  def find(name:String, password:String):Option[User] = {
     CoreSchema.users
       .where(user => user.name === name)
       .where(user => user.password === password).headOption
   }
 
-  def findById(id:Long):Option[User] = inTransaction{
-    CoreSchema.users.lookup(id)
-  }
+  def findById(id:Long):Option[User] = CoreSchema.users.lookup(id)
 
-  def insert(user:User) = {
-    user.validate match {
-      case result@Right(_) => {
-        transaction{ CoreSchema.users.insert(user) }
-        result
-      }
-      case x => x
+  def insert(user:User) = user.validate match {
+    case result@Right(_) => {
+      CoreSchema.users.insert(user)
+      result
     }
+    case x => x
   }
 
   def insertAsSocialUser(socialUser: SocialUser, token: String, secret: String): Either[Error, (User, AccessToken)] = {
     try {
-      transaction {
+      inTransaction {
         insert(User(socialUser.name, "", "default-password", LoggedInUser)) match {
           case Right(user) => {
             AccessTokenRepository.insert(AccessToken(socialUser.provider, token, secret, user.id)) match {

@@ -28,10 +28,10 @@ class UserRepositorySpec extends ModelSpecBase {
       }
     }
     ".insert" >> {
-      "追加可能な場合はRight" >> {
+      "追加可能な場合はRight" >> new WithTransaction {
         UserRepository.insert(validUser) must beRight(validUser)
       }
-      "追加不可能な場合はLeft" >> {
+      "追加不可能な場合はLeft" >> new WithTransaction {
         UserRepository.insert(invalidUser) must beLeft
       }
     }
@@ -61,19 +61,15 @@ class UserRepositorySpec extends ModelSpecBase {
   lazy val validUser = User("name", "email", "pass", Administrator)
   lazy val invalidUser = User("", "", "pass", Administrator)
 
-  trait sampleUser extends BeforeAfter {
+  trait sampleUser extends WithTransaction {
     val user = User("hoge", "foo", "bar", Administrator)
 
-    def before = {
-      transaction {
-        user.save
-      }
+    override def before = {
+      user.save
     }
 
-    def after = {
-      transaction {
-        users.deleteWhere(u => u.id === user.id)
-      }
+    override def after = {
+      users.deleteWhere(u => u.id === user.id)
     }
   }
 }
