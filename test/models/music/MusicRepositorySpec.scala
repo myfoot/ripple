@@ -7,7 +7,6 @@ import models.CoreSchema._
 import java.io.File
 import org.squeryl.PrimitiveTypeMode._
 
-
 /**
  * Created with IntelliJ IDEA.
  * User: natsuki
@@ -29,16 +28,23 @@ class MusicRepositorySpec extends ModelSpecBase {
         MusicRepository.insert(chatRoom, invalidMusic) must beLeft(Map('name -> List(RequireTextValidator.KEY), 'rawData -> List('empty)))
       }
     }
+    ".find" >> {
+      "指定したIDの音楽が存在する場合は、取得できる" >> new WithData {
+        MusicRepository.find(music.id) must beSome(music)
+      }
+    }
   }
 
   trait WithData extends WithTransaction {
     var chatRoom = ChatRoom("aaa")
+    var music = Music(new File(testdata))
 
     override def before = {
       chatRoom.save
+      chatRoom.musics.associate(music)
     }
     override def after = {
-      musics.foreach{music => musics.deleteWhere(m => m.id === music.id) }
+      musics.deleteWhere(m => m.id <> 0)
       chatRooms.deleteWhere(c => c.id === chatRoom.id)
     }
   }

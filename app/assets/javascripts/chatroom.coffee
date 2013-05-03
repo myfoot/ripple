@@ -78,22 +78,47 @@ root.ChatRoomActions = {
     )
 
   showMusics: (chatRoomId, tableId) ->
-    new ChatRoom(chatRoomId).musics((musics) ->
-      $table = $("##{tableId}")
-      $.each musics, (index, music) ->
-        $tr = $("<tr data-id=\"#{music.id}\"></tr>")
-        $artist = $("<td>#{music.artistName}</td>")
-        $album = $("<td>#{music.albumName}</td>")
-        $songTitle = $("<td>#{music.songTitle}</td>")
-        $table.append(
-          $tr
-          .append($artist)
-          .append($album)
-          .append($songTitle)
-        )
-    , (data) ->
-      alert("音楽一覧を取得できませんでした")
-      # TODO: ErrorMessage
-    )
+    $dfd = $.Deferred()
+    setTimeout(->
+      new ChatRoom(chatRoomId).musics((musics) ->
+        $table = $("##{tableId}")
+        $tbody = $("<tbody></tbody>")
+        $table.append($tbody)
+        $.each musics, (index, musicJson) ->
+          music = new Music(musicJson)
+          $tr = $("<tr data-id=\"#{music.id}\" data-format=\"#{music.format}\"></tr>")
+          $artist = $("<td>#{music.artistName}</td>")
+          $album = $("<td>#{music.albumName}</td>")
+          $songTitle = $("<td>#{music.songTitle}</td>")
+          $tbody.append(
+            $tr
+            .append($artist)
+            .append($album)
+            .append($songTitle)
+          )
+        $dfd.resolve()
+      , (data) ->
+        alert("音楽一覧を取得できませんでした")
+        # TODO: ErrorMessage
+        $dfd.reject()
+      )
+    , 0)
+    $dfd.promise()
 
+  playAllMusic: (controlsId, tableId) =>
+    musics = $("##{tableId} tbody tr").map((index, tr) -> id: $(tr).data('id'), format: $(tr).data('format'))
+    if musics.length > 0
+      $controls = $("##{controlsId}")
+      $audio = $("<audio controls></audio>")
+      $controls.append($audio)
+
+      count = 0
+      $audio.attr "src", Music.url(musics[count].id, musics[count].format)
+      $audio[0].play()
+      $audio[0].addEventListener "ended", (event) ->
+        if ++count >= musics.length
+          count = 0
+        $audio.attr "src", Music.url(musics[count].id, musics[count].format)
+        $audio[0].load()
+        $audio[0].play()
 }

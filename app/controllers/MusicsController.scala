@@ -5,7 +5,7 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.i18n.Messages
 import play.api.mvc.MultipartFormData.FilePart
 import play.api.libs.Files.TemporaryFile
-import play.api.mvc.SimpleResult
+import play.api.mvc.{ResponseHeader, SimpleResult}
 import org.squeryl.PrimitiveTypeMode._
 import models.user.LoggedInUser
 import models.music.{Music, MusicRepository}
@@ -14,6 +14,7 @@ import models.util.ValidationTypes._
 import models.chat.{ChatRoomRepository, ChatRoom}
 import controllers.util.FilePartExtensions._
 import controllers.util.ContentTypes._
+import play.api.libs.iteratee.Enumerator
 
 object MusicsController extends NeedAuthController {
   private val defaultResponseBuilder = new JsonResponseBuilder {}
@@ -57,6 +58,17 @@ object MusicsController extends NeedAuthController {
     result match {
       case Some(x) => x
       case None => MusicCreateResponseBuilder.error("error.music.invalid.parameter")
+    }
+  }
+
+  def show(id: Long, format: String) = authorizedAction(LoggedInUser) { user => implicit request =>
+    MusicRepository.find(id).map{music =>
+      SimpleResult(
+        header = ResponseHeader(200, Map(CONTENT_LENGTH -> music.rawData.length.toString)),
+        body = Enumerator(music.rawData)
+      )
+    }.getOrElse {
+      Forbidden
     }
   }
 
