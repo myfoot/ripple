@@ -15,21 +15,18 @@ import models.social.Provider
  * To change this template use File | Settings | File Templates.
  */
 object AccessTokenRepository {
-  def find(provider: Provider, token: String, secret: String) = inTransaction{
+  def find(provider: Provider, token: String, secret: String) =
     accessTokens
       .where(reruestToken => reruestToken.providerName === provider.name)
       .where(requestToken => requestToken.token === token)
       .where(requestToken => requestToken.secret === secret)
       .headOption
-  }
 
   def insert(token: AccessToken): Either[Map[Symbol, ErrorNames], AccessToken] = {
     token.validate match {
       case Left(x) => Left(x)
       case result@Right(_)  => {
-        inTransaction {
-          accessTokens.insert(token)
-        }
+        accessTokens.insert(token)
         result
       }
     }

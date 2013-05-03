@@ -6,9 +6,8 @@ import libs.concurrent.Promise
 import libs.iteratee.{Enumerator, Input, Done}
 import play.api.mvc._
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
 import play.api.libs.json.Writes._
-import jp.t2v.lab.play20.auth.Auth
+import org.squeryl.PrimitiveTypeMode._
 
 import chat.ChatRoomActor
 import request.RequestType
@@ -77,7 +76,7 @@ object ChatRoomsController extends NeedAuthController {
   /**
    * Handles the chat websocket.
    */
-  def chat(id: Long, userId: Long) = WebSocket.async[JsValue] { request  =>
+  def chat(id: Long, userId: Long) = WebSocket.async[JsValue] { request  => transaction {
     (ChatRoomRepository.find(id), UserRepository.findById(userId)) match {
       case (Some(chatRoom), Some(user)) => ChatRoomActor.join(chatRoom, user)
       case _ => {
@@ -86,6 +85,6 @@ object ChatRoomsController extends NeedAuthController {
         Promise.pure(iteratee,enumerator)
       }
     }
-  }
+  }}
 
 }

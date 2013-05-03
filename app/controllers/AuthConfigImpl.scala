@@ -7,6 +7,7 @@ import jp.t2v.lab.play20.auth
 import auth.AuthConfig
 import reflect.ClassTag
 import scala.reflect.classTag
+import org.squeryl.PrimitiveTypeMode._
 
 trait AuthConfigImpl extends AuthConfig {
   type Id = Long
@@ -17,7 +18,7 @@ trait AuthConfigImpl extends AuthConfig {
   val sessionTimeoutInSeconds:Int = 60*60*3 // 3h
 
 
-  def resolveUser(id:Id):Option[User] = UserRepository.findById(id)
+  def resolveUser(id:Id):Option[User] = transaction{ UserRepository.findById(id) }
 
   val redirectLogin = Redirect(routes.SessionsController.index())
   def loginSucceeded(request: RequestHeader): Result = Redirect(routes.ChatRoomsController.index())
