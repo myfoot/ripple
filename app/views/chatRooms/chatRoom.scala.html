@@ -4,7 +4,8 @@
 @import controllers.routes.javascript._
 @javascriptRouter("jsRoutes")(
     MusicsController.index,
-    MusicsController.show
+    MusicsController.show,
+    MusicsController.destroy
 )
 @main(Some(user.name)) {
     
@@ -39,6 +40,7 @@
                             <th>Artist</th>
                             <th>Album</th>
                             <th>SongTitle</th>
+                            <th></th>
                         </tr>
                     </thead>
                 </table>

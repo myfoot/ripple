@@ -30,6 +30,20 @@ class ChatRoom
       failedHandler(data)
     )
 
+class MusicHelper
+  @musicListRow: (music, deleteHandler) ->
+    $controls = $("<td></td>")
+    $deleteButton = $("<button title=\"delete this music\">×</button>")
+    $deleteButton.bind "click", (event) ->
+      Music.delete(music.id).always(deleteHandler)
+    $controls.append($deleteButton)
+
+    $("<tr data-id=\"#{music.id}\" data-format=\"#{music.format}\"></tr>")
+      .append($("<td>#{music.artistName}</td>"))
+      .append($("<td>#{music.albumName}</td>"))
+      .append($("<td>#{music.songTitle}</td>"))
+      .append($controls)
+
 root = exports ? this
 root.ChatRoomActions = {
   bindCreate: (options) ->
@@ -81,21 +95,16 @@ root.ChatRoomActions = {
     $dfd = $.Deferred()
     setTimeout(->
       new ChatRoom(chatRoomId).musics((musics) ->
+        $("##{tableId} tbody").remove()
         $table = $("##{tableId}")
         $tbody = $("<tbody></tbody>")
         $table.append($tbody)
         $.each musics, (index, musicJson) ->
           music = new Music(musicJson)
-          $tr = $("<tr data-id=\"#{music.id}\" data-format=\"#{music.format}\"></tr>")
-          $artist = $("<td>#{music.artistName}</td>")
-          $album = $("<td>#{music.albumName}</td>")
-          $songTitle = $("<td>#{music.songTitle}</td>")
-          $tbody.append(
-            $tr
-            .append($artist)
-            .append($album)
-            .append($songTitle)
-          )
+          $tbody.append(MusicHelper.musicListRow(music, (json) ->
+            alert(json.message) if json.success
+            ChatRoomActions.showMusics(chatRoomId, tableId)
+          ))
         $dfd.resolve()
       , (data) ->
         alert("音楽一覧を取得できませんでした")
@@ -104,6 +113,9 @@ root.ChatRoomActions = {
       )
     , 0)
     $dfd.promise()
+
+  createMusicInformations: (music) ->
+
 
   playAllMusic: (controlsId, tableId) =>
     musics = $("##{tableId} tbody tr").map((index, tr) -> id: $(tr).data('id'), format: $(tr).data('format'))
