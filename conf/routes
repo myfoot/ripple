@@ -11,6 +11,7 @@ POST    /rooms                      controllers.ChatRoomsController.create
 GET     /musics                     controllers.MusicsController.index(chatRoomId:Long)
 POST    /musics                     controllers.MusicsController.create(chatRoomId:Long)
 GET     /musics/$id<[0-9]+>$format<.*>  controllers.MusicsController.show(id:Long, format: String)
+DELETE  /musics/:id                 controllers.MusicsController.destroy(id:Long)
 
 #login
 GET     /login                      controllers.SessionsController.index

@@ -33,6 +33,16 @@ class MusicRepositorySpec extends ModelSpecBase {
         MusicRepository.find(music.id) must beSome(music)
       }
     }
+    ".delete" >> {
+      "指定したIDの音楽が存在する場合は、削除できる" >> new WithData {
+        MusicRepository.delete(music.id) must beTrue
+        musics.lookup(music.id) must beNone
+      }
+      "指定したIDの音楽が存在しない場合は、削除できない" >> new WithData {
+        MusicRepository.delete(-1) must beFalse
+        musics.lookup(music.id) must beSome(music)
+      }
+    }
   }
 
   trait WithData extends WithTransaction {

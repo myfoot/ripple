@@ -4,4 +4,5 @@ error.chatroom.id.notExist=chat room dose not exist.
 
 error.music.file.invalidContentType=invalid file type.
 error.music.file.required=file not exist.
+error.music.id.notExist=music does not exist.
 error.music.invalid.parameter=Data you send was invalid.
