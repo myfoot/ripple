@@ -1,38 +1,19 @@
 import sbt._
 import org.scalastyle.sbt.ScalastylePlugin
 import Keys._
-import play.Project._
 
 object ApplicationBuild extends Build {
 
   val appName         = "ripple"
   val appVersion      = "1.0"
 
-  val appDependencies = Seq(
-    jdbc,
-    anorm,
-    "org.squeryl" %% "squeryl" % "0.9.5-6" withSources(),
-    "mysql" % "mysql-connector-java" % "5.1.21",
-    "jp.t2v" %% "play21.auth" % "0.7" withSources(),
-    "org.twitter4j" % "twitter4j-core" % "[3.0,)",
-    "com.jsuereth" %% "scala-arm" % "1.3",
-    "com.twitter" % "util-eval" % "6.1.0" withSources(),
-    "org" % "jaudiotagger" % "2.0.3" withSources(),
-    "com.typesafe" % "config" % "1.0.0",
-    "org.mockito" % "mockito-all" % "1.9.0" % "test"
-  )
-
   lazy val appSettings = Defaults.defaultSettings ++
                          ScalastylePlugin.Settings ++
                          Seq(ScctPlugin.instrumentSettings: _*)
 
-  lazy val main = play.Project(appName, appVersion, appDependencies, settings = appSettings).settings(
+  lazy val main = play.Project(appName, appVersion, Dependencies.dependencies, settings = appSettings).settings(
     scalaVersion := "2.10.0",
-    resolvers ++= Seq(
-      "t2v.jp repo" at "http://www.t2v.jp/maven-repo/",
-      "twitter4j repo" at "http://twitter4j.org/maven2",
-      "Twitter repo" at "http://maven.twttr.com/"
-    ),
+    resolvers ++= Dependencies.resolvers,
     testOptions in Test += Tests.Argument(TestFrameworks.Specs2, "junitxml", "console")
   )
 }
