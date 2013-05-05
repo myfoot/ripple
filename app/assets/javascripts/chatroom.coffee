@@ -52,9 +52,11 @@ root.ChatRoomActions = {
         else
           errors = $('#' + options.errors)
           errors.html('')
-          errorsUl = errors.append($('<ul>'))
+          errorsDiv = $('<div class="alert alert-error">')
+          errorsUl = errorsDiv.append($('<ul>'))
           $.each createResult.messages.name, (index, message) ->
             errorsUl.append($('<li>').append(message))
+          errors.append(errorsDiv)
 
   bindAjaxFilePost: (id) ->
     $form = $("##{id}")
