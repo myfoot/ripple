@@ -25,4 +25,4 @@ bin
 
 # for sample files
 conf/social.conf
-conf/TwitterConfig.scala
+conf/redis.conf
