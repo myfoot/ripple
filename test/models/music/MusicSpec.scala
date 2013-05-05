@@ -25,7 +25,7 @@ class MusicSpec extends ModelSpecBase {
       }
       "ファイルのデータが配列で取得できる" >> {
         val file = new File(mp3TestDataPath)
-        Music(file).rawData must_== read(file)
+        Music(file).rawData sameElements read(file) must_== true
       }
       "曲名が取得できる" >> {
         val file = new File(m4aTestDataPath)
