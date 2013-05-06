@@ -67,7 +67,8 @@ root.ChatRoomActions = {
           errors = $('#' + options.errors)
           errors.html('')
           errorsDiv = $('<div class="alert alert-error">')
-          errorsUl = errorsDiv.append($('<ul>'))
+          errorsUl = $('<ul>')
+          errorsDiv.append(errorsUl)
           $.each createResult.messages.name, (index, message) ->
             errorsUl.append($('<li>').append(message))
           errors.append(errorsDiv)
