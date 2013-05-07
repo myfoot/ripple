@@ -4,6 +4,7 @@ import org.squeryl._
 import PrimitiveTypeMode._
 import models.CoreSchema._
 import models.util.ValidatorTypes._
+import models.user.User
 
 object ChatRoomRepository {
   def find(name:String):Option[ChatRoom] = {
@@ -11,9 +12,6 @@ object ChatRoomRepository {
   }
   def find(id:Long):Option[ChatRoom] = {
     chatRooms.where(room => room.id === id).headOption
-  }
-  def findOrCreate(name:String):ChatRoom = {
-    find(name).getOrElse(chatRooms.insert(new ChatRoom(name)))
   }
   def all:List[ChatRoom] = {
     chatRooms.toList

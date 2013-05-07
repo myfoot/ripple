@@ -30,7 +30,8 @@ object CoreSchema extends Schema {
 
   on(chatRooms)(ent => declare(
     ent.id is(autoIncremented),
-    ent.name is(unique, dbType("varchar(255)"))
+    ent.name is(unique, dbType("varchar(255)")),
+    ent.ownerId is(dbType("int(10)"))
   ))
 
   on(accessTokens)(ent => declare(
@@ -57,4 +58,8 @@ object CoreSchema extends Schema {
   val chatRoomToMusic =
     oneToManyRelation(chatRooms, musics)
       .via((chat, music) => chat.id === music.chatRoomId)
+
+  val userToChatRoom =
+    oneToManyRelation(users, chatRooms)
+      .via((user, chat) => user.id === chat.ownerId)
 }

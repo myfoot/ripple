@@ -1,6 +1,6 @@
 package models.music
 
-import models.ModelSpecBase
+import models.{WithTestUser, ModelSpecBase}
 import java.io.{FileInputStream, InputStream, File}
 import models.chat.ChatRoom
 import org.squeryl.PrimitiveTypeMode._
@@ -78,17 +78,19 @@ class MusicSpec extends ModelSpecBase {
     }
   }
 
-  trait WithData extends WithTransaction {
-    val chat = ChatRoom("hoge")
-    val music = Music(new File(mp3TestDataPath))
+  trait WithData extends WithTransaction with WithTestUser {
+    lazy val chat = ChatRoom("hoge", user)
+    lazy val music = Music(new File(mp3TestDataPath))
 
     override def before = {
+      saveUser
       chat.save
     }
 
     override def after = {
       musics.deleteWhere(m => m.id <> 0)
       chatRooms.deleteWhere(c => c.id <> 0)
+      cleanUser
     }
   }
 

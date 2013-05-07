@@ -9,8 +9,12 @@ import models.util.Validations._
 import models.util.ValidatorComposite._
 import models.music.Music
 import org.squeryl.PrimitiveTypeMode._
+import org.squeryl.annotations._
+import org.squeryl.dsl.ManyToOne
 
-class ChatRoom(val name:String) extends BaseEntity{
+class ChatRoom(val name:String,
+               @Column("owner_id")
+               val ownerId: Long) extends BaseEntity{
   type ModelClass = this.type
 
   private type Members = MutableSet[User]
@@ -20,6 +24,8 @@ class ChatRoom(val name:String) extends BaseEntity{
   override lazy val validators: Map[Symbol, Validator] = Map(
     'name -> (requiredText(name, false) :+ unique(ChatRoomRepository.find(name)))
   )
+
+  lazy val owner: ManyToOne[User] = CoreSchema.userToChatRoom.right(this)
 
   def musics = CoreSchema.chatRoomToMusic.left(this)
   def musicsWithoutRawData: Seq[(Long, String, String, String, String)] = {
@@ -41,5 +47,5 @@ class ChatRoom(val name:String) extends BaseEntity{
 }
 
 object ChatRoom {
-  def apply(name:String) = new ChatRoom(name.trimSpaces)
+  def apply(name:String, user:User) = new ChatRoom(name.trimSpaces, user.id)
 }
