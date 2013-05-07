@@ -1,8 +1,9 @@
 package models.chat
 
-import models.ModelSpecBase
+import models.{WithTestUser, ModelSpecBase}
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
+import models.user.{Administrator, User}
 
 /**
  * Created with IntelliJ IDEA.
@@ -30,30 +31,18 @@ class ChatRoomRepositorySpec extends ModelSpecBase {
       }
     }
 
-    "#findOrCreate" >> {
-      "指定された名前の部屋が存在する場合はCharRoomオブジェクトを返す" >> new WithTestData {
-        ChatRoomRepository.findOrCreate(chatRoom.name) must equalTo(chatRoom)
-      }
-      "指定された名前の部屋が存在しない場合は新規作成して返す" >> new WithTestData {
-        val name = "hogefoobar"
-        val newRoom = ChatRoomRepository.findOrCreate(name)
-        newRoom.name must equalTo(name)
-        newRoom.isPersisted must beTrue
-      }
-    }
-
     "#create" >> {
       "指定されたChatRoomオブジェクトが追加可能な場合はRightオブジェクトが取得できる" >> new WithTestData {
         // TODO: 本当はstub化したいが、mixinしたtraitのメソッドをstub化しようとすると、エラーになる。UninitializedFieldError: Uninitialized field: Schema.scala: 11 (Validations.scala:23)
 //        val mockChatRoom = mock[ChatRoom]
 //        mockChatRoom.validate returns true
-        val mockChatRoom = ChatRoom("hoge-chat")
+        val mockChatRoom = ChatRoom("hoge-chat", user)
         ChatRoomRepository.insert(mockChatRoom) must beRight(mockChatRoom)
         ChatRoomRepository.find(mockChatRoom.name) must beSome
       }
       "指定されたChatRoomオブジェクトが追加不可能な場合はLeftオブジェクトが取得できる" >> new WithTestData {
         // TODO: stub化
-        val mockChatRoom = ChatRoom(chatRoom.name)
+        val mockChatRoom = ChatRoom(chatRoom.name, user)
         ChatRoomRepository.insert(mockChatRoom) must beLeft
         ChatRoomRepository.find(mockChatRoom.name) must beSome(chatRoom)
       }
@@ -66,16 +55,18 @@ class ChatRoomRepositorySpec extends ModelSpecBase {
     }
   }
 
-  trait WithTestData extends WithTransaction {
-    lazy val chatRoom = ChatRoom("test_room")
-    lazy val chatRoom2 = ChatRoom("test_room2")
+  trait WithTestData extends WithTransaction with WithTestUser {
+    lazy val chatRoom = ChatRoom("test_room", user)
+    lazy val chatRoom2 = ChatRoom("test_room2", user)
     override def before = {
+      saveUser
       chatRoom.save
       chatRoom2.save
     }
 
     override def after = {
-      chatRooms.toList.foreach(c => chatRooms.deleteWhere(c2 => c2.id === c.id))
+      chatRooms.deleteWhere(c => c.id gt 0)
+      cleanUser
     }
   }
 }

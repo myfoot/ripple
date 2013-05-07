@@ -1,6 +1,6 @@
 package models.music
 
-import models.ModelSpecBase
+import models.{WithTestUser, ModelSpecBase}
 import models.util.RequireTextValidator
 import models.chat.ChatRoom
 import models.CoreSchema._
@@ -45,17 +45,19 @@ class MusicRepositorySpec extends ModelSpecBase {
     }
   }
 
-  trait WithData extends WithTransaction {
-    var chatRoom = ChatRoom("aaa")
+  trait WithData extends WithTransaction with WithTestUser {
+    lazy val chatRoom = ChatRoom("aaa", user)
     var music = Music(new File(testdata))
 
     override def before = {
+      saveUser
       chatRoom.save
       chatRoom.musics.associate(music)
     }
     override def after = {
       musics.deleteWhere(m => m.id <> 0)
       chatRooms.deleteWhere(c => c.id === chatRoom.id)
+      cleanUser
     }
   }
 }
