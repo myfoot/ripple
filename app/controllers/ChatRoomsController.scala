@@ -26,7 +26,11 @@ object ChatRoomsController extends NeedAuthController {
     def writes(o: ChatRoom): JsValue = {
       Json.obj(
         "id" -> o.id,
-        "name" -> o.name
+        "name" -> o.name,
+        "owner" -> Json.obj(
+          "id" -> o.ownerId,
+          "name" -> o.owner.headOption.map(u => u.name)
+        )
       )
     }
   }
@@ -38,11 +42,8 @@ object ChatRoomsController extends NeedAuthController {
     }
   }
 
-  val createForm = Form(
-    mapping(
-      "name" -> text
-    )(ChatRoom.apply)((room:ChatRoom) => Some(room.name))
-  )
+  val createForm = Form("name" -> text)
+
   /**
    * XHR only
    */
@@ -50,7 +51,7 @@ object ChatRoomsController extends NeedAuthController {
     createForm.bindFromRequest.fold(
       // errorはありえないけどね
       errors => Ok(Json.obj("error" -> true, "success" -> false)),
-      chatRoom => ChatRoomRepository.insert(chatRoom) match {
+      name => ChatRoomRepository.insert(ChatRoom(name, user)) match {
         case Right(_) => Ok(Json.obj("success" -> true, "error" -> false, "messages" -> ""))
         case Left(x) => Ok(Json.obj(
           "success" -> false,
