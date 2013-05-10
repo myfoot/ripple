@@ -121,18 +121,36 @@ root.ChatRoomActions = {
 
 
   playAllMusic: (controlsId, tableId) =>
-    musics = $("##{tableId} tbody tr").map((index, tr) -> id: $(tr).data('id'), format: $(tr).data('format'))
+    musics = $("##{tableId} tbody tr").map((index, tr) ->
+      td = $(tr).find("td")
+      id: $(tr).data('id'), format: $(tr).data('format'), song: td.eq(2).html(), artist: td.eq(0).html(), album: td.eq(1).html())
     if musics.length > 0
+      # 出来上がるHTML構造
+      # <div id="controls" class="navbar">
+      #   <div class="navbar-inner">
+      #     <p>Title</p>
+      #     <div>Artist - Album</div>
+      #     <audio controls="" src="http://localhost:9000/musics/1.m4a"></audio>
+      #   </div>
+      # </div>
       $controls = $("##{controlsId}")
-      $audio = $("<audio controls></audio>")
-      $controls.append($audio)
+      $navbarInner = $("<div class=\"navbar-inner\"></div>")
+      $controls.append($navbarInner)
 
       count = 0
+      $song = $("<p>#{musics[count].song}</p>")
+      $navbarInner.append($song)
+      $artistAndAlbum = $("<div>#{musics[count].artist} - #{musics[count].album}</div>")
+      $navbarInner.append($artistAndAlbum)
+      $audio = $("<audio controls></audio>")
+      $navbarInner.append($audio)
       $audio.attr "src", Music.url(musics[count].id, musics[count].format)
       $audio[0].play()
       $audio[0].addEventListener "ended", (event) ->
         if ++count >= musics.length
           count = 0
+        $song.text(musics[count].song)
+        $artistAndAlbum.text("#{musics[count].artist} - #{musics[count].album}")
         $audio.attr "src", Music.url(musics[count].id, musics[count].format)
         $audio[0].load()
         $audio[0].play()
