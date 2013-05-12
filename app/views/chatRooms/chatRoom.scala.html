@@ -10,7 +10,8 @@
 @main(Some(user.name)) {
     
     <div class="page-header">
-        <h1>@chatRoom.name &nbsp;<small>You are chatting as <strong>@user.name</strong></small></h1>
+        <h1>@chatRoom.name</h1>
+        <div id="chatroom_title">by @chatRoom.owner.headOption.map(u => u.name)</div>
     </div>
     
     <div id="onError" class="alert-message error">
