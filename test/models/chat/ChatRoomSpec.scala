@@ -6,6 +6,11 @@ import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
 import models.music.Music
 import java.io.File
+import models.chat.action.Talk
+import util.redis.RedisClient
+import org.json4s.jackson.JsonMethods._
+import models.chat.action.Talk
+import org.json4s.JsonAST.JValue
 
 class ChatRoomSpec extends ModelSpecBase {
   lazy val user = User("hoge", "hoge@foo.com", "pass", Administrator)
@@ -51,6 +56,45 @@ class ChatRoomSpec extends ModelSpecBase {
       }
     }
   }
+
+  "#talk" should {
+    // ChatRoomRepositoryをモックにできれば、、、
+    "発言が保存される" >> new WithTestData {
+      val talk = Talk(user, "hoge")
+      chatRoom.talk(talk).toOption must beSome(talk)
+
+      RedisClient.withClient{ client =>
+        client.llen(chatRoom.talkKey) must_== 1
+      }
+
+      override def after {
+        super.after
+        RedisClient.withClient{ client =>
+          client.del(chatRoom.talkKey)
+        }
+      }
+    }
+  }
+
+  "#talks" should {
+    "件数、ページを指定しない場合" >> {
+      "チャット部屋の会話の最新10件を取得する" >> new WithTestTalkData {
+        val talkJsons = talks.takeRight(10).foldLeft(Nil: List[JValue]) { case (acc: List[JValue], talk: Talk) =>
+          talk.toJson :: acc
+        }
+        chatRoom.talks() must_== talkJsons
+      }
+    }
+    "件数、ページを指定した場合" >> {
+      "指定した範囲の会話を取得する" >> new WithTestTalkData {
+        val talkJsons = talks.takeRight(20).take(10).foldLeft(Nil: List[JValue]) { case (acc: List[JValue], talk: Talk) =>
+          talk.toJson :: acc
+        }
+        chatRoom.talks(count = 10, page = 2) must_== talkJsons
+      }
+    }
+  }
+
   "#musicsWithoutRawData" >> {
     val mp3TestDataName = "test-data.mp3"
     val mp3TestDataPath = s"test/data/$mp3TestDataName"
@@ -61,6 +105,30 @@ class ChatRoomSpec extends ModelSpecBase {
         val actual = chatRoom.musicsWithoutRawData
         actual.length must be_==(1)
         actual.head must be_==(music.id, music.name, music.artistName, music.albumName, music.songTitle)
+      }
+    }
+  }
+
+  "#talkKey" >> {
+    "登録用キーが取得できる" >> new WithTestData {
+      chatRoom.talkKey must_== s"chatroom:${chatRoom.id}:talks"
+    }
+  }
+
+  trait WithTestTalkData extends WithTestData {
+    lazy val talks = (0 to 50).map(i => Talk(user, s"message${i}"))
+
+    override def before {
+      super.before
+      RedisClient.withClient{ client =>
+        talks.foreach(talk => client.lpush(chatRoom.talkKey, compact(render(talk.toJson))))
+      }
+    }
+
+    override def after {
+      super.after
+      RedisClient.withClient{ client =>
+        client.del(chatRoom.talkKey)
       }
     }
   }
