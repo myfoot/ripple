@@ -10,5 +10,5 @@ object RedisClient {
   val config = ConfigFactory.load(ConfigFactory.parseFileAnySyntax(new File("conf/redis.conf")))
   val pool = new Pool(new JedisPool(new JedisPoolConfig(), config.getString("redis.host"), config.getInt("redis.port"), 2000))
 
-  def withClient(f: Wrap => Unit): Unit = pool.withClient{ f }
+  def withClient[A](f: Wrap => A): A = pool.withClient{ f }
 }

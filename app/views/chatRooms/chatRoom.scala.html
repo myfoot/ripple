@@ -1,4 +1,7 @@
 @(chatRoom: models.chat.ChatRoom, user: models.user.User)(implicit request: RequestHeader)
+@import org.json4s.JsonAST.JValue
+@import org.json4s._
+@import org.json4s.jackson.JsonMethods._
 
 @import helper._
 @import controllers.routes.javascript._
@@ -22,7 +25,14 @@
     <div id="controls" class="navbar"></div>
     <div id="onChat" class="row">
         <div class="span8" id="main">
-            <div id="messages"></div>
+            <div id="messages">
+                @for(talk <- chatRoom.talks().reverse) {
+                  <div class="message">
+                      <span>@talk.user.name</span>
+                      <p>@talk.message</p>
+                  </div>
+                }
+            </div>
             <div>
                 <textarea id="talk"></textarea>
             </div>

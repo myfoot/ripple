@@ -10,9 +10,9 @@ import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.JsValue
 import play.api.Logger
 
-import controllers.chat.action.ChatAction._
 import controllers.chat.ConnectionResult.Connected
 import models.user.{LoggedInUser, User}
+import models.chat.action.{Talk, Join}
 
 object Robot {
 
