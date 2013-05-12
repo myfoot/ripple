@@ -51,6 +51,13 @@ class ChatRoomSpec extends ModelSpecBase {
       }
     }
   }
+
+  "#talk" should {
+    "発言はRedisに保存される" >> {
+      pending
+    }
+  }
+
   "#musicsWithoutRawData" >> {
     val mp3TestDataName = "test-data.mp3"
     val mp3TestDataPath = s"test/data/$mp3TestDataName"

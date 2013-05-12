@@ -10,10 +10,10 @@ import play.api.libs.json._
 import play.api.libs.iteratee._
 import scala.collection.mutable.{HashSet => MutableSet, Map => MutableMap}
 import models.user.User
-import controllers.chat.action.ChatAction._
 import controllers.chat.ConnectionResult.{Connected, CannotConnect}
 import models.chat.ChatRoom
 import play.libs.Akka
+import models.chat.action.{Quit, Talk, NotifyJoin, Join}
 
 class ChatRoomActor extends Actor {
   val members = MutableSet.empty[User]

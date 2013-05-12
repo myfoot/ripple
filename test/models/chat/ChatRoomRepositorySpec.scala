@@ -4,6 +4,7 @@ import models.{WithTestUser, ModelSpecBase}
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
 import models.user.{Administrator, User}
+import controllers.chat.action.ChatAction.Talk
 
 /**
  * Created with IntelliJ IDEA.
@@ -53,6 +54,12 @@ class ChatRoomRepositorySpec extends ModelSpecBase {
         ChatRoomRepository.all.size must equalTo(2)
       }
     }
+
+    "#talk" >> {
+      "Redisにstoreされる" >> {
+      }.pendingUntilFixed
+    }
+
   }
 
   trait WithTestData extends WithTransaction with WithTestUser {
