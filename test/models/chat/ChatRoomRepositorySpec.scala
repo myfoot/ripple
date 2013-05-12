@@ -6,6 +6,9 @@ import models.CoreSchema._
 import models.chat.action.Talk
 import util.redis.RedisClient
 import org.json4s.jackson.JsonMethods._
+import org.sedis.Dress._
+import org.json4s.JsonAST.JValue
+import views.html.chatRooms.chatRoom
 
 class ChatRoomRepositorySpec extends ModelSpecBase {
   "ChatRoomRepository" should {
@@ -51,32 +54,47 @@ class ChatRoomRepositorySpec extends ModelSpecBase {
 
     "#talk" >> {
       "Redisにstoreされる" >> new WithTestData {
-        import org.sedis.Dress._
-
-        val talk = Talk(user, "hoge")
         ChatRoomRepository.insert(chatRoom, talk).toOption must beSome(talk)
         RedisClient.withClient{ client =>
-          val talks = client.lrange(talk.key(chatRoom), 0, -1)
+          val talks = client.lrange(chatRoom.talkKey, 0, -1)
           talks.size must_== 1
           talks.foreach{(value) =>
             value must_== compact(render(talk.toJson))
           }
         }
+      }
+    }
 
-        override def after {
-          super.after
-          RedisClient.withClient{ client=>
-            client.del(talk.key(chatRoom))
-          }
-        }
+    "#talks" >> {
+      "指定した範囲の会話を取得する" >> new WithTestTalkData {
+        ChatRoomRepository.talks(chatRoom, 10, 2) must_== talks.reverse.take(20).takeRight(10).toList
       }
     }
 
   }
 
+  trait WithTestTalkData extends WithTestData {
+    lazy val talks = (0 to 50).map(i => Talk(user, s"message${i}"))
+
+    override def before {
+      super.before
+      RedisClient.withClient{ client =>
+        talks.foreach(talk => client.lpush(chatRoom.talkKey, compact(render(talk.toJson))))
+      }
+    }
+    override def after {
+      super.after
+      RedisClient.withClient{ client =>
+        client.del(chatRoom.talkKey)
+      }
+    }
+  }
+
   trait WithTestData extends WithTransaction with WithTestUser {
     lazy val chatRoom = ChatRoom("test_room", user)
     lazy val chatRoom2 = ChatRoom("test_room2", user)
+    lazy val talk = Talk(user, "hoge")
+
     override def before = {
       saveUser
       chatRoom.save
@@ -86,6 +104,9 @@ class ChatRoomRepositorySpec extends ModelSpecBase {
     override def after = {
       chatRooms.deleteWhere(c => c.id gt 0)
       cleanUser
+      RedisClient.withClient{ client=>
+        client.del(chatRoom.talkKey)
+      }
     }
   }
 }

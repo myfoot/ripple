@@ -6,11 +6,6 @@ import org.json4s.JsonAST.JValue
 
 class TalkSpec extends ModelSpecBase {
   "Talk" should {
-    "#key" >> {
-      "登録用キーが取得できる" >> new WithTestData {
-        Talk(user, "hoge").key(chatRoom) must_== s"chatroom:${chatRoom.id}:talks"
-      }
-    }
     "#toJson" >> {
       "jsonが取得できる" >> new WithTestData {
         val json: JValue = ("userId" -> user.id) ~ ("message" -> "hoge")
