@@ -5,6 +5,10 @@ import PrimitiveTypeMode._
 import models.CoreSchema._
 import models.util.ValidatorTypes._
 import models.user.User
+import models.chat.action.Talk
+import scala.util.Try
+import util.redis.RedisClient
+import org.json4s.jackson.JsonMethods._
 
 object ChatRoomRepository {
   def find(name:String):Option[ChatRoom] = {
@@ -25,4 +29,13 @@ object ChatRoomRepository {
       }
     }
   }
+  def insert(chatRoom: ChatRoom, talk: Talk): Try[Talk] = {
+    RedisClient.withClient{ client =>
+      Try {
+        client.lpush(talk.key(chatRoom), compact(render(talk.toJson)))
+        talk
+      }
+    }
+  }
+
 }

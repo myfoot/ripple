@@ -11,6 +11,8 @@ import models.music.Music
 import org.squeryl.PrimitiveTypeMode._
 import org.squeryl.annotations._
 import org.squeryl.dsl.ManyToOne
+import models.chat.action.Talk
+import scala.util.Try
 
 class ChatRoom(val name:String,
                @Column("owner_id")
@@ -44,6 +46,7 @@ class ChatRoom(val name:String,
       true
     }
   }
+  def talk(talk: Talk): Try[Talk] = ChatRoomRepository.insert(this, talk)
 }
 
 object ChatRoom {

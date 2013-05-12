@@ -21,6 +21,7 @@ object Dependencies {
     "com.twitter" % "util-eval" % "6.1.0" withSources(),
     "org" % "jaudiotagger" % "2.0.3" withSources(),
     "com.typesafe" % "config" % "1.0.0",
+    "org.json4s" %% "json4s-jackson" % "3.2.4" withSources(),
     "org.mockito" % "mockito-all" % "1.9.0" % "test"
   )
 }

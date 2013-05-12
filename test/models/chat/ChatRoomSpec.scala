@@ -6,6 +6,8 @@ import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
 import models.music.Music
 import java.io.File
+import models.chat.action.Talk
+import util.redis.RedisClient
 
 class ChatRoomSpec extends ModelSpecBase {
   lazy val user = User("hoge", "hoge@foo.com", "pass", Administrator)
@@ -53,8 +55,21 @@ class ChatRoomSpec extends ModelSpecBase {
   }
 
   "#talk" should {
-    "発言はRedisに保存される" >> {
-      pending
+    "発言が保存される" >> new WithTestData {
+      val talk = Talk(user, "hoge")
+      chatRoom.talk(talk).toOption must beSome(talk)
+
+      // ChatRoomRepositoryをモックにできれば、、、
+      RedisClient.withClient{ client =>
+        client.llen(talk.key(chatRoom)) must_== 1
+      }
+
+      override def after {
+        super.after
+        RedisClient.withClient{ client =>
+          client.del(talk.key(chatRoom))
+        }
+      }
     }
   }
 

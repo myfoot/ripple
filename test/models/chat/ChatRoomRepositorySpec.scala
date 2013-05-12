@@ -3,16 +3,10 @@ package models.chat
 import models.{WithTestUser, ModelSpecBase}
 import org.squeryl.PrimitiveTypeMode._
 import models.CoreSchema._
-import models.user.{Administrator, User}
-import controllers.chat.action.ChatAction.Talk
+import models.chat.action.Talk
+import util.redis.RedisClient
+import org.json4s.jackson.JsonMethods._
 
-/**
- * Created with IntelliJ IDEA.
- * User: natsuki
- * Date: 12/12/02
- * Time: 18:35
- * To change this template use File | Settings | File Templates.
- */
 class ChatRoomRepositorySpec extends ModelSpecBase {
   "ChatRoomRepository" should {
     "#find" >> {
@@ -56,8 +50,26 @@ class ChatRoomRepositorySpec extends ModelSpecBase {
     }
 
     "#talk" >> {
-      "Redisにstoreされる" >> {
-      }.pendingUntilFixed
+      "Redisにstoreされる" >> new WithTestData {
+        import org.sedis.Dress._
+
+        val talk = Talk(user, "hoge")
+        ChatRoomRepository.insert(chatRoom, talk).toOption must beSome(talk)
+        RedisClient.withClient{ client =>
+          val talks = client.lrange(talk.key(chatRoom), 0, -1)
+          talks.size must_== 1
+          talks.foreach{(value) =>
+            value must_== compact(render(talk.toJson))
+          }
+        }
+
+        override def after {
+          super.after
+          RedisClient.withClient{ client=>
+            client.del(talk.key(chatRoom))
+          }
+        }
+      }
     }
 
   }
