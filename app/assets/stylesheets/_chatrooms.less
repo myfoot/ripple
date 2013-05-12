@@ -1,5 +1,10 @@
 .container {
   .content {
+    #chatroom_title {
+      text-align: right;
+      font-size: 1.5em;
+    }
+
     #chatroom_list {
       .span4 {
         // TODO ここで消すんじゃなくて、そもそもbootstrapの定義を上書いている方を対応する
@@ -13,6 +18,13 @@
 
       .chatroom_block:hover {
         background-color: #f9f9f9;
+      }
+
+      .chatroom_owner {
+        text-align: right;
+        padding-right: 5px;
+        margin: -10px 0 10px 0;
+        color: rgb(134, 130, 130);
       }
 
       table {

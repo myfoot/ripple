@@ -28,6 +28,7 @@
             }
                 <div class="chatroom_block span4">
                     <h2><a tabindex="@i" href="@routes.ChatRoomsController.show(chatRoom.id)">@chatRoom.name</a></h2>
+                    <div class="chatroom_owner">@chatRoom.owner.headOption.map(u => u.name)</div>
                     @if(chatRoom.musics) {
                     <table class="table table-condensed table-striped">
                         <thead>
